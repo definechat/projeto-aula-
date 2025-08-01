@@ -181,9 +181,9 @@ export default function ChatPage() {
   }, [currentStep, awaitingUserResponse, userInfo]);
 
   return (
-    <div className="bg-background flex justify-center items-center min-h-screen p-0 sm:p-4">
-      <div className="w-full h-screen sm:h-[90vh] sm:max-w-md sm:max-h-[850px] flex flex-col bg-white dark:bg-black sm:rounded-2xl shadow-2xl overflow-hidden">
-        <header className="flex-shrink-0 flex items-center p-3 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-md z-10">
+    <div className="bg-background flex justify-center items-center min-h-screen p-0 md:p-4">
+      <div className="w-full h-screen md:h-[90vh] md:max-w-md md:max-h-[850px] flex flex-col bg-white dark:bg-black md:rounded-2xl shadow-2xl overflow-hidden">
+        <header className="flex-shrink-0 flex items-center p-2 md:p-3 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-md z-10">
           <Button variant="ghost" size="icon" className="text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-9 w-9">
             <ArrowLeft />
           </Button>
@@ -192,10 +192,10 @@ export default function ChatPage() {
             <AvatarFallback>M</AvatarFallback>
           </Avatar>
           <div className="ml-3 flex-grow">
-            <h1 className="font-bold text-lg">MiKE - Terapeuta de Emagrecimento</h1>
+            <h1 className="font-bold text-base md:text-lg">MiKE - Terapeuta de Emagrecimento</h1>
             <p className="text-sm opacity-80 text-teal-600 dark:text-teal-400">{headerStatus}</p>
           </div>
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-1 md:gap-2">
             <Button variant="ghost" size="icon" className="text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-9 w-9"><VideoIcon /></Button>
             <Button variant="ghost" size="icon" className="text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-9 w-9"><Phone /></Button>
             <Button variant="ghost" size="icon" className="text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-9 w-9"><MoreVertical /></Button>
@@ -225,7 +225,7 @@ export default function ChatPage() {
           </div>
         </main>
 
-        <footer className="flex-shrink-0 p-2 sm:p-3 bg-gray-100 dark:bg-gray-900 border-t">
+        <footer className="flex-shrink-0 p-2 md:p-3 bg-gray-100 dark:bg-gray-900 border-t">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-10 w-10"><Smile /></Button>
             <Input
