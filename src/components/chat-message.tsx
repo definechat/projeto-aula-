@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -6,6 +7,7 @@ import { cn } from '@/lib/utils';
 import type { Message } from '@/lib/types';
 import { AudioPlayer } from './audio-player';
 import { Button } from "./ui/button";
+import { TypingIndicator } from './typing-indicator';
 
 const MessageStatus = ({ status }: { status: Message['status'] }) => {
   if (status === 'read') return <CheckCheck className="h-4 w-4 text-blue-500" />;
@@ -32,7 +34,8 @@ export const ChatMessage = ({ message, onAudioEnd, onQuickReply }: ChatMessagePr
   const messageBubbleClasses = cn(
     'relative w-fit max-w-[85%] sm:max-w-[75%] rounded-xl px-3 py-1.5 shadow-sm flex flex-col',
     isUser ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-muted text-muted-foreground rounded-bl-none',
-    { 'p-1': (type === 'image' || type === 'video') && imageSrc }
+    { 'p-1': (type === 'image' || type === 'video') && imageSrc },
+    { 'p-2': type === 'loading' }
   );
 
   const TimeStamp = ({isMedia}: {isMedia?: boolean}) => (
@@ -45,7 +48,7 @@ export const ChatMessage = ({ message, onAudioEnd, onQuickReply }: ChatMessagePr
   const renderContent = () => {
     switch (type) {
       case 'loading':
-        return <div className="flex items-center gap-2 text-sm"><Loader2 className="h-4 w-4 animate-spin" /><span>Digitando...</span></div>;
+        return <TypingIndicator />;
       
       case 'image-generating':
         return <div className="flex items-center gap-2 text-sm"><Loader2 className="h-4 w-4 animate-spin" /><span>{content}</span></div>;

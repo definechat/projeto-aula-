@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -17,9 +18,13 @@ export default function ChatPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [awaitingUserResponse, setAwaitingUserResponse] = useState(false);
   const [generatedImages, setGeneratedImages] = useState<{ image1DataUri: string, image2DataUri: string } | null>(null);
+  const [headerStatus, setHeaderStatus] = useState('online');
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  const audioSentRef = useRef<HTMLAudioElement>(null);
+  const audioReceivedRef = useRef<HTMLAudioElement>(null);
 
   const scrollToBottom = () => {
     chatContainerRef.current?.scrollTo({ top: chatContainerRef.current.scrollHeight, behavior: 'smooth' });
@@ -30,6 +35,12 @@ export default function ChatPage() {
   }, [messages, isProcessing]);
 
   const addMessage = (message: Omit<Message, 'id' | 'timestamp' | 'status'>) => {
+    if (message.sender === 'user') {
+        audioSentRef.current?.play().catch(console.error);
+    } else {
+        audioReceivedRef.current?.play().catch(console.error);
+    }
+
     setMessages(prev => [...prev, {
       ...message,
       id: crypto.randomUUID(),
@@ -49,6 +60,30 @@ export default function ChatPage() {
     handleNextStep();
   };
   
+  useEffect(() => {
+    const step = currentStep < chatFlow.length ? chatFlow[currentStep] : null;
+
+    if (!step) {
+      setIsProcessing(false);
+      setHeaderStatus('online');
+      return;
+    }
+
+    if (isProcessing) {
+        if (step.type === 'audio') {
+            setHeaderStatus('gravando áudio...');
+        } else if (step.type === 'image-generating') {
+            setHeaderStatus('digitando...');
+        } else if (step.type !== 'quick-reply' && step.type !== 'cta') {
+            setHeaderStatus('digitando...');
+        }
+    } else {
+        setHeaderStatus('online');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isProcessing, currentStep]);
+
+
   useEffect(() => {
     if (currentStep >= chatFlow.length || awaitingUserResponse) {
       if (currentStep >= chatFlow.length) setIsProcessing(false);
@@ -125,7 +160,7 @@ export default function ChatPage() {
                 </Avatar>
                 <div className="ml-3 flex-grow">
                     <h1 className="font-bold text-lg font-headline">Ana - GrãoKiseca</h1>
-                    <p className="text-sm opacity-80">online</p>
+                    <p className="text-sm opacity-80">{headerStatus}</p>
                 </div>
                 <div className="flex items-center gap-1 sm:gap-2">
                     <Button variant="ghost" size="icon" className="text-accent-foreground hover:bg-white/10 rounded-full h-9 w-9"><VideoIcon /></Button>
@@ -139,7 +174,7 @@ export default function ChatPage() {
                     {messages.map((msg) => (
                       <ChatMessage key={msg.id} message={msg} onAudioEnd={onAudioEnd} onQuickReply={handleQuickReply} />
                     ))}
-                    {isProcessing && !awaitingUserResponse && currentStep > 0 && chatFlow[currentStep-1]?.type !== 'image-generating' && (
+                    {isProcessing && !awaitingUserResponse && currentStep > 0 && chatFlow[currentStep-1]?.type !== 'image-generating' && chatFlow[currentStep]?.type !== 'audio' && (
                       <ChatMessage message={{ id: 'typing', sender: 'bot', type: 'loading', timestamp: '' }} onAudioEnd={()=>{}} onQuickReply={()=>{}}/>
                     )}
                 </div>
@@ -161,6 +196,8 @@ export default function ChatPage() {
                 </div>
             </footer>
         </div>
+        <audio ref={audioSentRef} src="/audio/sent.mp3" preload="auto"></audio>
+        <audio ref={audioReceivedRef} src="/audio/received.mp3" preload="auto"></audio>
     </div>
   );
 }
