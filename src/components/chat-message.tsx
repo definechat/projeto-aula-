@@ -5,10 +5,8 @@ import Image from "next/image";
 import { Check, CheckCheck, Clock, Loader2, PlayCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Message } from '@/lib/types';
-import { AudioPlayer } from './audio-player';
 import { Button } from "./ui/button";
 import { TypingIndicator } from './typing-indicator';
-import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 
 const MessageStatus = ({ status }: { status: Message['status'] }) => {
   if (status === 'read') return <CheckCheck className="h-4 w-4 text-blue-500" />;
@@ -19,11 +17,10 @@ const MessageStatus = ({ status }: { status: Message['status'] }) => {
 
 interface ChatMessageProps {
     message: Message;
-    onAudioEnd: () => void;
     onQuickReply: (option: { text: string; value: any }) => void;
 }
 
-export const ChatMessage = ({ message, onAudioEnd, onQuickReply }: ChatMessageProps) => {
+export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
   const { sender, type, content, timestamp, imageSrc, audioDuration, status, options } = message;
   const isUser = sender === 'user';
 
@@ -34,15 +31,15 @@ export const ChatMessage = ({ message, onAudioEnd, onQuickReply }: ChatMessagePr
 
   const messageBubbleClasses = cn(
     'relative w-fit max-w-[85%] sm:max-w-[75%] rounded-xl px-3 py-1.5 shadow-sm flex flex-col',
-    isUser ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-muted text-muted-foreground rounded-bl-none',
-    { 'p-1': (type === 'image' || type === 'video') && imageSrc },
-    { 'p-2': type === 'loading' },
-    { 'flex-row items-end gap-2': type === 'audio' && !isUser }
+    isUser ? 'bg-teal-500 text-white rounded-br-none' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none',
+    { 'p-1 bg-transparent dark:bg-transparent shadow-none': (type === 'image' || type === 'video') && imageSrc },
+    { 'p-2 bg-gray-200 dark:bg-gray-700': type === 'loading' },
+    { 'bg-transparent dark:bg-transparent shadow-none': type === 'audio' }
   );
 
   const TimeStamp = ({isMedia}: {isMedia?: boolean}) => (
-    <div className={cn("flex justify-end items-center gap-1 self-end", isUser ? "text-primary-foreground/80" : "text-muted-foreground/80", isMedia ? "text-white/80" : "")}>
-      <span className="text-xs">{timestamp}</span>
+    <div className={cn("flex justify-end items-center gap-1 self-end text-xs", isUser ? "text-white/80" : "text-gray-500", isMedia ? "absolute bottom-1.5 right-1.5 text-white/80" : "")}>
+      <span>{timestamp}</span>
       {isUser && status && <MessageStatus status={status} />}
     </div>
   );
@@ -51,9 +48,6 @@ export const ChatMessage = ({ message, onAudioEnd, onQuickReply }: ChatMessagePr
     switch (type) {
       case 'loading':
         return <TypingIndicator />;
-      
-      case 'image-generating':
-        return <div className="flex items-center gap-2 text-sm"><Loader2 className="h-4 w-4 animate-spin" /><span>{content}</span></div>;
       
       case 'image':
       case 'video':
@@ -71,35 +65,26 @@ export const ChatMessage = ({ message, onAudioEnd, onQuickReply }: ChatMessagePr
                 <PlayCircle className="h-16 w-16 text-white/80" />
               </div>
             )}
-            <div className={cn("p-2 pb-0", (content || audioDuration) && "absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent rounded-b-lg pt-6")}>
+            <div className="absolute bottom-0 left-0 right-0 p-2 pt-6 bg-gradient-to-t from-black/60 to-transparent rounded-b-lg">
                 {content && <p className="text-sm my-1 text-white">{content}</p>}
-                {audioDuration && <AudioPlayer duration={audioDuration} onPlaybackEnd={onAudioEnd} sender='bot' autoPlay={false} />}
-                <TimeStamp isMedia/>
+                <TimeStamp isMedia />
             </div>
           </div>
         );
+      
       case 'audio':
+        // Simplified audio message, will be part of a future implementation
         return (
-            <div className="flex items-end gap-2">
-                { !isUser && (
-                  <Avatar className="h-8 w-8 self-start -ml-1">
-                    <AvatarImage src="https://placehold.co/100x100/25D366/FFFFFF.png?text=GK" data-ai-hint="logo grain" alt="GrãoKiseca" />
-                    <AvatarFallback>GK</AvatarFallback>
-                  </Avatar>
-                )}
-                <div className={cn('rounded-xl px-3 py-1.5 shadow-sm flex flex-col', isUser ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-muted text-muted-foreground rounded-bl-none')}>
-                  <div className="flex items-end gap-2">
-                      <AudioPlayer duration={audioDuration!} onPlaybackEnd={onAudioEnd} sender={sender} autoPlay={true} />
-                      <TimeStamp />
-                  </div>
-                </div>
+            <div className='flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300'>
+                <PlayCircle className="h-5 w-5" />
+                <span>Áudio: {content}</span>
             </div>
-        )
+        );
 
       case 'quick-reply':
           return (
             <div className="flex flex-col items-center gap-2 my-2 w-full">
-              <p className="text-center text-muted-foreground">{content}</p>
+              <p className="text-center text-gray-600 dark:text-gray-300">{content}</p>
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-2">
                 {options?.map(opt => (
                   <Button key={opt.value} variant="outline" className="bg-white dark:bg-gray-800 dark:hover:bg-gray-700 shadow-sm w-full" onClick={() => onQuickReply(opt)}>{opt.text}</Button>
@@ -129,14 +114,6 @@ export const ChatMessage = ({ message, onAudioEnd, onQuickReply }: ChatMessagePr
   
   if (type === 'quick-reply' || type === 'cta') {
     return renderContent();
-  }
-
-  if (type === 'audio') {
-    return (
-      <div className={messageContainerClasses}>
-          {renderContent()}
-      </div>
-    );
   }
 
   return (

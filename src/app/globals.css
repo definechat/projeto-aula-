@@ -15,7 +15,7 @@
     --primary-foreground: 0 0% 100%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
-    --muted: 0 0% 100%;
+    --muted: 220 13% 91%;
     --muted-foreground: 240 5% 35%;
     --accent: 174 72% 31%;
     --accent-foreground: 0 0% 100%;
@@ -60,7 +60,7 @@
 
 @layer utilities {
   .chat-bg {
-    background-color: hsl(220 13% 91%);
+    background-color: hsl(var(--muted));
     background-image: url("https://i.imgur.com/PSbVBS5.png");
     background-repeat: repeat;
   }

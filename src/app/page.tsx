@@ -2,26 +2,32 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Phone, Video as VideoIcon, MoreVertical, Send, Smile, Paperclip } from 'lucide-react';
+import { ArrowLeft, Phone, Video as VideoIcon, MoreVertical, Send, Smile, Paperclip, Download, User, Weight, Ruler } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { chatFlow } from '@/lib/chat-flow';
-import type { Message } from '@/lib/types';
-import { generateChatImages } from './actions';
+import type { Message, UserInfo } from '@/lib/types';
 import { ChatMessage } from '@/components/chat-message';
-import { useToast } from '@/hooks/use-toast';
+import { IMCForm } from '@/components/imc-form';
+import { ReportCard } from '@/components/report-card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import html2canvas from 'html2canvas';
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [awaitingUserResponse, setAwaitingUserResponse] = useState(false);
-  const [generatedImages, setGeneratedImages] = useState<{ image1DataUri: string, image2DataUri: string } | null>(null);
   const [headerStatus, setHeaderStatus] = useState('online');
+  const [showIMCForm, setShowIMCForm] = useState(false);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [showReport, setShowReport] = useState(false);
+  const [showLeadModal, setShowLeadModal] = useState(false);
+  const [leadInfo, setLeadInfo] = useState({ name: '', whatsapp: '' });
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
+  const reportCardRef = useRef<HTMLDivElement>(null);
 
   const audioSentRef = useRef<HTMLAudioElement>(null);
   const audioReceivedRef = useRef<HTMLAudioElement>(null);
@@ -32,13 +38,13 @@ export default function ChatPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isProcessing]);
+  }, [messages, isProcessing, showIMCForm, showReport]);
 
   const addMessage = (message: Omit<Message, 'id' | 'timestamp' | 'status'>) => {
     if (message.sender === 'user') {
-        audioSentRef.current?.play().catch(console.error);
+      audioSentRef.current?.play().catch(console.error);
     } else {
-        audioReceivedRef.current?.play().catch(console.error);
+      audioReceivedRef.current?.play().catch(console.error);
     }
 
     setMessages(prev => [...prev, {
@@ -52,14 +58,42 @@ export default function ChatPage() {
   const handleNextStep = (stepIncrement = 1) => {
     setCurrentStep(prev => prev + stepIncrement);
   };
-  
+
   const handleQuickReply = (option: { text: string; value: any }) => {
     if (isProcessing) return;
     addMessage({ sender: 'user', type: 'text', content: option.text });
     setAwaitingUserResponse(false);
     handleNextStep();
   };
+
+  const handleIMCSubmit = (data: UserInfo) => {
+    setUserInfo(data);
+    setShowIMCForm(false);
+    addMessage({ sender: 'user', type: 'text', content: `Pronto! Meus dados: ${data.weight}kg e ${data.height}cm.` });
+    handleNextStep();
+  };
   
+  const handleDownloadReport = async () => {
+    if (!reportCardRef.current) return;
+    try {
+        const canvas = await html2canvas(reportCardRef.current, { scale: 2 });
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/jpeg', 0.9);
+        link.download = `relatorio-graokiseca-${leadInfo.name.split(' ')[0].toLowerCase()}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setShowLeadModal(false);
+        addMessage({ sender: 'bot', type: 'text', content: "Ótimo! Seu relatório foi baixado. Agora vamos continuar para a parte final." });
+        handleNextStep();
+    } catch (error) {
+        console.error("Erro ao gerar a imagem do relatório:", error);
+        addMessage({ sender: 'bot', type: 'text', content: "Tive um problema ao gerar seu relatório. Vamos continuar mesmo assim." });
+        handleNextStep();
+    }
+  };
+
+
   useEffect(() => {
     const step = currentStep < chatFlow.length ? chatFlow[currentStep] : null;
 
@@ -70,18 +104,15 @@ export default function ChatPage() {
     }
 
     if (isProcessing && !awaitingUserResponse) {
-        const currentFlowStep = chatFlow[currentStep];
-        if (currentFlowStep.type === 'audio') {
-            setHeaderStatus('gravando áudio...');
-        } else if (currentFlowStep.type === 'image-generating') {
-             setHeaderStatus('digitando...');
-        } else if (currentFlowStep.type !== 'quick-reply' && currentFlowStep.type !== 'cta') {
-            setHeaderStatus('digitando...');
-        }
+      const currentFlowStep = chatFlow[currentStep];
+      if (currentFlowStep.type === 'audio') {
+        setHeaderStatus('gravando áudio...');
+      } else if (currentFlowStep.type !== 'quick-reply' && currentFlowStep.type !== 'cta') {
+        setHeaderStatus('digitando...');
+      }
     } else {
-        setHeaderStatus('online');
+      setHeaderStatus('online');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isProcessing, currentStep, awaitingUserResponse]);
 
 
@@ -100,24 +131,20 @@ export default function ChatPage() {
         await new Promise(resolve => setTimeout(resolve, step.delay));
       }
 
-      // Handle audio with recording simulation
-      if (step.type === 'audio') {
-        // Show "gravando..." for 7 seconds, then send message
-        await new Promise(resolve => setTimeout(resolve, 7000));
+      if (step.type === 'calculator') {
+        setShowIMCForm(true);
+        setAwaitingUserResponse(true);
+        setIsProcessing(false);
+        return;
       }
 
-      if (step.type === 'image-generating') {
-        addMessage({ sender: 'bot', type: 'image-generating', content: step.content });
-        try {
-          const images = await generateChatImages();
-          setGeneratedImages(images);
-        } catch (error) {
-          console.error(error);
-          toast({
-            title: "Erro na Geração de Imagem",
-            description: "Não foi possível gerar as imagens. O fluxo continuará.",
-            variant: "destructive"
-          });
+      if (step.type === 'report') {
+        if (userInfo) {
+          setShowReport(true);
+          setAwaitingUserResponse(true);
+        } else {
+          // Fallback if user info is somehow missing
+          addMessage({ sender: 'bot', type: 'text', content: "Parece que não tenho suas informações. Vamos pular esta etapa." });
         }
         setIsProcessing(false);
         handleNextStep();
@@ -131,8 +158,6 @@ export default function ChatPage() {
       };
 
       if (step.audioDuration) messageToAdd.audioDuration = step.audioDuration;
-      if (step.type === 'image' && generatedImages) messageToAdd.imageSrc = generatedImages.image1DataUri;
-      if (step.type === 'video' && generatedImages) messageToAdd.imageSrc = generatedImages.image2DataUri;
       if (step.type === 'quick-reply') messageToAdd.options = step.options;
       
       addMessage(messageToAdd);
@@ -141,74 +166,115 @@ export default function ChatPage() {
         setAwaitingUserResponse(true);
         setIsProcessing(false);
       } else {
-         // for audio, we set isProcessing to false inside onAudioEnd
-        if (step.type !== 'audio') {
-            setIsProcessing(false);
-            handleNextStep();
-        }
+        setIsProcessing(false);
+        handleNextStep();
       }
     };
 
     runStep();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentStep, awaitingUserResponse, generatedImages]);
-
-  const onAudioEnd = () => {
-    setIsProcessing(false);
-    handleNextStep();
-  };
+  }, [currentStep, awaitingUserResponse, userInfo]);
 
   return (
     <div className="bg-background flex justify-center items-center min-h-screen p-0 sm:p-4">
-        <div className="w-full h-screen sm:max-w-md sm:h-[90vh] sm:max-h-[850px] flex flex-col bg-white dark:bg-black sm:rounded-2xl shadow-2xl overflow-hidden">
-            <header className="flex items-center p-3 bg-accent text-accent-foreground shadow-md z-10 flex-shrink-0">
-                <Button variant="ghost" size="icon" className="text-accent-foreground hover:bg-white/10 rounded-full h-9 w-9">
-                  <ArrowLeft />
-                </Button>
-                <Avatar className="h-10 w-10 ml-2">
-                    <AvatarImage src="https://placehold.co/100x100/25D366/FFFFFF.png?text=GK" data-ai-hint="logo grain" alt="GrãoKiseca" />
-                    <AvatarFallback>GK</AvatarFallback>
-                </Avatar>
-                <div className="ml-3 flex-grow">
-                    <h1 className="font-bold text-lg font-headline">Ana - GrãoKiseca</h1>
-                    <p className="text-sm opacity-80">{headerStatus}</p>
-                </div>
-                <div className="flex items-center gap-1 sm:gap-2">
-                    <Button variant="ghost" size="icon" className="text-accent-foreground hover:bg-white/10 rounded-full h-9 w-9"><VideoIcon /></Button>
-                    <Button variant="ghost" size="icon" className="text-accent-foreground hover:bg-white/10 rounded-full h-9 w-9"><Phone /></Button>
-                    <Button variant="ghost" size="icon" className="text-accent-foreground hover:bg-white/10 rounded-full h-9 w-9"><MoreVertical /></Button>
-                </div>
-            </header>
+      <div className="w-full h-screen sm:h-auto sm:max-w-md sm:aspect-[9/16] sm:max-h-[850px] flex flex-col bg-white dark:bg-black sm:rounded-2xl shadow-2xl overflow-hidden">
+        <header className="flex items-center p-3 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-md z-10 flex-shrink-0">
+          <Button variant="ghost" size="icon" className="text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-9 w-9">
+            <ArrowLeft />
+          </Button>
+          <Avatar className="h-10 w-10 ml-2">
+            <AvatarImage src="https://placehold.co/100x100/25D366/FFFFFF.png?text=M" data-ai-hint="logo M" alt="MiKE" />
+            <AvatarFallback>M</AvatarFallback>
+          </Avatar>
+          <div className="ml-3 flex-grow">
+            <h1 className="font-bold text-lg">MiKE - Terapeuta de Emagrecimento</h1>
+            <p className="text-sm opacity-80 text-teal-600 dark:text-teal-400">{headerStatus}</p>
+          </div>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Button variant="ghost" size="icon" className="text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-9 w-9"><VideoIcon /></Button>
+            <Button variant="ghost" size="icon" className="text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-9 w-9"><Phone /></Button>
+            <Button variant="ghost" size="icon" className="text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-9 w-9"><MoreVertical /></Button>
+          </div>
+        </header>
 
-            <main ref={chatContainerRef} className="flex-grow p-4 overflow-y-auto chat-bg">
-                <div className="flex flex-col gap-4">
-                    {messages.map((msg) => (
-                      <ChatMessage key={msg.id} message={msg} onAudioEnd={onAudioEnd} onQuickReply={handleQuickReply} />
-                    ))}
-                    {isProcessing && !awaitingUserResponse && currentStep < chatFlow.length && chatFlow[currentStep]?.type !== 'audio' && chatFlow[currentStep]?.type !== 'image-generating' && (
-                      <ChatMessage message={{ id: 'typing', sender: 'bot', type: 'loading', timestamp: '' }} onAudioEnd={()=>{}} onQuickReply={()=>{}}/>
-                    )}
+        <main ref={chatContainerRef} className="flex-grow p-4 overflow-y-auto chat-bg">
+          <div className="flex flex-col gap-4">
+            {messages.map((msg) => (
+              <ChatMessage key={msg.id} message={msg} onQuickReply={handleQuickReply} />
+            ))}
+            {isProcessing && !awaitingUserResponse && (
+              <ChatMessage message={{ id: 'typing', sender: 'bot', type: 'loading', timestamp: '' }} onQuickReply={() => { }} />
+            )}
+            {showIMCForm && <IMCForm onSubmit={handleIMCSubmit} />}
+            {showReport && userInfo && (
+              <>
+                <ReportCard ref={reportCardRef} userInfo={userInfo} />
+                <div className="flex justify-center my-2">
+                  <Button onClick={() => setShowLeadModal(true)} size="lg" className="bg-green-500 hover:bg-green-600 text-white font-bold shadow-lg">
+                    <Download className="mr-2 h-5 w-5" />
+                    Baixar Relatório em JPG
+                  </Button>
                 </div>
-            </main>
+              </>
+            )}
+          </div>
+        </main>
 
-            <footer className="p-2 sm:p-3 bg-background border-t flex-shrink-0">
-                <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-10 w-10"><Smile /></Button>
-                    <Input 
-                        type="text" 
-                        placeholder="Mensagem"
-                        className="flex-grow rounded-full px-4 bg-white dark:bg-gray-800"
-                        disabled={true}
+        <footer className="p-2 sm:p-3 bg-gray-100 dark:bg-gray-900 border-t flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" className="text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-10 w-10"><Smile /></Button>
+            <Input
+              type="text"
+              placeholder="Mensagem"
+              className="flex-grow rounded-full px-4 bg-white dark:bg-gray-800"
+              disabled={true}
+            />
+            <Button variant="ghost" size="icon" className="text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-10 w-10"><Paperclip /></Button>
+            <Button size="icon" className="bg-teal-500 hover:bg-teal-600 rounded-full h-10 w-10">
+              <Send />
+            </Button>
+          </div>
+        </footer>
+
+        <Dialog open={showLeadModal} onOpenChange={setShowLeadModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Quase lá! Baixe seu relatório personalizado.</DialogTitle>
+              <DialogDescription>
+                Por favor, preencha seus dados para gerarmos seu relatório. Ele será seu guia inicial nesta jornada de transformação!
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <User className="h-5 w-5 text-gray-500" />
+                    <Input
+                        id="name"
+                        placeholder="Seu nome completo"
+                        value={leadInfo.name}
+                        onChange={(e) => setLeadInfo({ ...leadInfo, name: e.target.value })}
+                        className="col-span-3"
                     />
-                    <Button variant="ghost" size="icon" className="text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-10 w-10"><Paperclip /></Button>
-                    <Button size="icon" className="bg-accent hover:bg-accent/90 rounded-full h-10 w-10">
-                        <Send />
-                    </Button>
                 </div>
-            </footer>
-        </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    <Input
+                        id="whatsapp"
+                        placeholder="Seu WhatsApp com DDD"
+                        value={leadInfo.whatsapp}
+                        onChange={(e) => setLeadInfo({ ...leadInfo, whatsapp: e.target.value })}
+                        className="col-span-3"
+                    />
+                </div>
+            </div>
+             <Button onClick={handleDownloadReport} disabled={!leadInfo.name || !leadInfo.whatsapp}>
+                <Download className="mr-2 h-4 w-4" />
+                Baixar e Continuar
+            </Button>
+          </DialogContent>
+        </Dialog>
+
         <audio ref={audioSentRef} src="/audio/sent.mp3" preload="auto"></audio>
         <audio ref={audioReceivedRef} src="/audio/received.mp3" preload="auto"></audio>
+      </div>
     </div>
   );
 }
