@@ -14,7 +14,7 @@ interface AudioPlayerProps {
 }
 
 export function AudioPlayer({ duration, onPlaybackEnd, sender, autoPlay = true }: AudioPlayerProps) {
-  const [isPlaying, setIsPlaying] = useState(autoPlay);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -43,6 +43,7 @@ export function AudioPlayer({ duration, onPlaybackEnd, sender, autoPlay = true }
   useEffect(() => {
     let startTimeout: NodeJS.Timeout;
     if (autoPlay) {
+      setIsPlaying(true);
       // Small delay before autoplaying
       startTimeout = setTimeout(startPlayback, 300);
     }
@@ -93,7 +94,7 @@ export function AudioPlayer({ duration, onPlaybackEnd, sender, autoPlay = true }
         {isBot && <Mic2 className="h-4 w-4 text-primary" />}
         {isBot && !isPlaying && progress === 100 && <Mic2 className="h-4 w-4 text-muted-foreground" />}
       </div>
-       {isUser && (
+       {!isBot && (
            <Avatar className="h-8 w-8">
             <AvatarImage src="https://placehold.co/100x100/25D366/FFFFFF.png?text=GK" data-ai-hint="logo grain" alt="GrãoKiseca" />
             <AvatarFallback>GK</AvatarFallback>
