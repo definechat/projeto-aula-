@@ -13,6 +13,7 @@ import { IMCForm } from '@/components/imc-form';
 import { ReportCard } from '@/components/report-card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import html2canvas from 'html2canvas';
+import { AudioPlayer } from '@/components/audio-player';
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -69,6 +70,7 @@ export default function ChatPage() {
   const handleIMCSubmit = (data: UserInfo) => {
     setUserInfo(data);
     setShowIMCForm(false);
+    setAwaitingUserResponse(false); // This was the missing piece
     addMessage({ sender: 'user', type: 'text', content: `Pronto! Meus dados: ${data.weight}kg e ${data.height}cm.` });
     handleNextStep();
   };
@@ -104,12 +106,11 @@ export default function ChatPage() {
     }
 
     if (isProcessing && !awaitingUserResponse) {
-      const currentFlowStep = chatFlow[currentStep];
-      if (currentFlowStep.type === 'audio') {
-        setHeaderStatus('gravando áudio...');
-      } else if (currentFlowStep.type !== 'quick-reply' && currentFlowStep.type !== 'cta') {
-        setHeaderStatus('digitando...');
-      }
+        if (step.type === 'audio') {
+            setHeaderStatus('gravando áudio...');
+        } else if (step.type !== 'quick-reply' && step.type !== 'cta' && step.type !== 'calculator' && step.type !== 'report') {
+            setHeaderStatus('digitando...');
+        }
     } else {
       setHeaderStatus('online');
     }
@@ -127,14 +128,17 @@ export default function ChatPage() {
     const runStep = async () => {
       setIsProcessing(true);
       
-      if (step.delay) {
-        await new Promise(resolve => setTimeout(resolve, step.delay));
+      const delay = step.type === 'audio' ? (step.audioDuration || 0) * 1000 : (step.delay || 0);
+      
+      if (delay > 0) {
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
+      
+      setIsProcessing(false);
 
       if (step.type === 'calculator') {
         setShowIMCForm(true);
         setAwaitingUserResponse(true);
-        setIsProcessing(false);
         return;
       }
 
@@ -143,10 +147,8 @@ export default function ChatPage() {
           setShowReport(true);
           setAwaitingUserResponse(true);
         } else {
-          // Fallback if user info is somehow missing
           addMessage({ sender: 'bot', type: 'text', content: "Parece que não tenho suas informações. Vamos pular esta etapa." });
         }
-        setIsProcessing(false);
         handleNextStep();
         return;
       }
@@ -158,15 +160,14 @@ export default function ChatPage() {
       };
 
       if (step.audioDuration) messageToAdd.audioDuration = step.audioDuration;
+      if (step.type === 'image' && step.imageSrc) messageToAdd.imageSrc = step.imageSrc;
       if (step.type === 'quick-reply') messageToAdd.options = step.options;
       
       addMessage(messageToAdd);
       
       if (step.waitForUser) {
         setAwaitingUserResponse(true);
-        setIsProcessing(false);
       } else {
-        setIsProcessing(false);
         handleNextStep();
       }
     };

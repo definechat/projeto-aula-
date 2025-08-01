@@ -5,9 +5,9 @@ export const chatFlow: ChatStep[] = [
   {
     id: 1,
     sender: 'bot',
-    type: 'text',
+    type: 'audio',
     content: "Olá! Sou o MiKE, seu terapeuta de emagrecimento virtual. Estou aqui para te ajudar a entender melhor suas necessidades e traçar um plano para você alcançar seus objetivos.",
-    delay: 1500,
+    audioDuration: 10,
   },
   {
     id: 2,
