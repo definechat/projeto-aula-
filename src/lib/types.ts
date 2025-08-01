@@ -28,6 +28,6 @@ export interface Message {
 export interface UserInfo {
   weight: number;
   height: number;
+  gender: 'male' | 'female';
+  activityLevel: 'sedentary' | 'active';
 }
-
-    
