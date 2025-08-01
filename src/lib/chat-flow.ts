@@ -33,9 +33,11 @@ export const chatFlow: ChatStep[] = [
   {
     id: 5,
     sender: 'bot',
-    type: 'text',
+    type: 'audio',
     content: "Sendo direto com a senhora... tem muita mulher que esta nas nuvens depois de descobrir essa planta milenar sagrada, que produz um vegetal, que suga, gordura da barriga sem dietas e academia, esvazia seu intestino, acabando com prisão de ventre , tudo isso usando 1x ao dia apos o almoço ! nossas clientes depois de emagrecer, passam a viver e nao sobreviver, melhorando sua saude , auto-estima, começa a sair de casa, viajando , conhecendo praias visitando familiares , o resultados delas é tão grande, que ao ve-las os paretens nao se controlam e nos procuram dizendo oi... minha irma usou um produto de voces, e eu vou querer tambem ela emagreceu muito a familia ta chocada !",
-    delay: 4000
+    delay: 4000,
+    audioSrc: '/audio/planta-milenar.mp3',
+    audioDuration: 30,
   },
   {
     id: 6,
@@ -56,7 +58,7 @@ export const chatFlow: ChatStep[] = [
     id: 7,
     sender: 'bot',
     type: 'audio',
-    content: "Entendi, minha querida, veja so , 90% das nossa clientes sofriam desse mal , isso virou uma verdadeira epidemia no brasil milhoes de mulheres de 40 acima que nao consegem se exercitar devido problema nas articulaçoes, dores, e nao conseguem fazer dietas pois tem dificuldade de permanecer, ... nessa caso elas dependiam de um produto que resolvesse sem dieta e academia , muitos nem sabe que Deus ja criou um vegetal especifico na natureza pra emagrecer e limpar o intestino acabando com prisão de vente, ! abaixo de Deus , devido os depoimentos de nossas clientes, eu te dou absoluta certeza, voce nunca mais vai precisar procurar produto para emagrecer vc encontrou o unico que resolve , te dou 100% de certeza para quem usar como indicamos !",
+    content: "Entendi, minha querida, veja so , 90% das nossa clientes sofriam desse mal , isso virou uma verdadeira epidemia no brasil milhoes de mulheres de 40 acima que nao conseguem se exercitar devido problema nas articulaçoes, dores, e nao conseguem fazer dietas pois tem dificuldade de permanecer, ... nessa caso elas dependiam de um produto que resolvesse sem dieta e academia , muitos nem sabe que Deus ja criou um vegetal especifico na natureza pra emagrecer e limpar o intestino acabando com prisão de vente, ! abaixo de Deus , devido os depoimentos de nossas clientes, eu te dou absoluta certeza, voce nunca mais vai precisar procurar produto para emagrecer vc encontrou o unico que resolve , te dou 100% de certeza para quem usar como indicamos !",
     audioSrc: '/audio/epidemia.mp3',
     audioDuration: 35,
     delay: 2000,
