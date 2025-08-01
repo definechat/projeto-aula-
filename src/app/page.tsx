@@ -14,6 +14,7 @@ import { ReportCard } from '@/components/report-card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import html2canvas from 'html2canvas';
 import { AudioPlayer } from '@/components/audio-player';
+import { useAnalytics } from '@/lib/analytics';
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -26,6 +27,8 @@ export default function ChatPage() {
   const [showReport, setShowReport] = useState(false);
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [leadInfo, setLeadInfo] = useState({ name: '', whatsapp: '' });
+
+  const { trackEvent } = useAnalytics();
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const reportCardRef = useRef<HTMLDivElement>(null);
@@ -41,11 +44,15 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages, isProcessing, showIMCForm, showReport]);
 
-  const addMessage = (message: Omit<Message, 'id' | 'timestamp' | 'status'>) => {
+  const addMessage = (message: Omit<Message, 'id' | 'timestamp' | 'status'>, stepId?: string) => {
     if (message.sender === 'user') {
       audioSentRef.current?.play().catch(console.error);
     } else {
       audioReceivedRef.current?.play().catch(console.error);
+    }
+
+    if (stepId) {
+      trackEvent(stepId);
     }
 
     setMessages(prev => [...prev, {
@@ -60,23 +67,25 @@ export default function ChatPage() {
     setCurrentStep(prev => prev + stepIncrement);
   };
 
-  const handleQuickReply = (option: { text: string; value: any }) => {
+  const handleQuickReply = (option: { text: string; value: any }, stepId?: string) => {
     if (isProcessing) return;
-    addMessage({ sender: 'user', type: 'text', content: option.text });
+    addMessage({ sender: 'user', type: 'text', content: option.text }, stepId);
     setAwaitingUserResponse(false);
     handleNextStep();
   };
 
   const handleIMCSubmit = (data: UserInfo) => {
+    const step = chatFlow[currentStep];
     setUserInfo(data);
     setShowIMCForm(false);
     setAwaitingUserResponse(false); 
-    addMessage({ sender: 'user', type: 'text', content: `Pronto! Meus dados: ${data.weight}kg e ${data.height}cm.` });
+    addMessage({ sender: 'user', type: 'text', content: `Pronto! Meus dados: ${data.weight}kg e ${data.height}cm.` }, step.id ? `step_${step.id}` : undefined);
     handleNextStep();
   };
   
   const handleDownloadReport = async () => {
     if (!reportCardRef.current) return;
+    const step = chatFlow[currentStep];
     try {
         const canvas = await html2canvas(reportCardRef.current, { scale: 2 });
         const link = document.createElement('a');
@@ -87,13 +96,13 @@ export default function ChatPage() {
         document.body.removeChild(link);
         setShowLeadModal(false);
         setShowReport(false);
-        addMessage({ sender: 'bot', type: 'text', content: "Ótimo! Seu relatório foi baixado. Agora vamos continuar para a parte final." });
+        addMessage({ sender: 'bot', type: 'text', content: "Ótimo! Seu relatório foi baixado. Agora vamos continuar para a parte final." }, step.id ? `step_${step.id}` : undefined);
         setAwaitingUserResponse(false);
         handleNextStep(); 
     } catch (error) {
         console.error("Erro ao gerar a imagem do relatório:", error);
         setShowReport(false);
-        addMessage({ sender: 'bot', type: 'text', content: "Tive um problema ao gerar seu relatório. Vamos continuar mesmo assim." });
+        addMessage({ sender: 'bot', type: 'text', content: "Tive um problema ao gerar seu relatório. Vamos continuar mesmo assim." }, step.id ? `step_${step.id}` : undefined);
         setAwaitingUserResponse(false);
         handleNextStep();
     }
@@ -128,6 +137,7 @@ export default function ChatPage() {
     }
 
     const step = chatFlow[currentStep];
+    const stepId = `step_${step.id}`;
 
     const runStep = async () => {
       setIsProcessing(true);
@@ -141,6 +151,7 @@ export default function ChatPage() {
       setIsProcessing(false);
 
       if (step.type === 'calculator') {
+        trackEvent(stepId);
         setShowIMCForm(true);
         setAwaitingUserResponse(true);
         return;
@@ -148,6 +159,7 @@ export default function ChatPage() {
 
       if (step.type === 'report') {
         if (userInfo) {
+          trackEvent(stepId);
           setShowReport(true);
           setAwaitingUserResponse(true);
         } else {
@@ -168,7 +180,7 @@ export default function ChatPage() {
       if (step.type === 'quick-reply' && step.options) messageToAdd.options = step.options;
       if (step.audioSrc) messageToAdd.audioSrc = step.audioSrc;
       
-      addMessage(messageToAdd);
+      addMessage(messageToAdd, stepId);
       
       if (step.waitForUser) {
         setAwaitingUserResponse(true);
@@ -205,7 +217,7 @@ export default function ChatPage() {
         <main ref={chatContainerRef} className="flex-grow p-4 overflow-y-auto chat-bg">
           <div className="flex flex-col gap-4">
             {messages.map((msg) => (
-              <ChatMessage key={msg.id} message={msg} onQuickReply={handleQuickReply} />
+              <ChatMessage key={msg.id} message={msg} onQuickReply={(option) => handleQuickReply(option, `step_${chatFlow[currentStep].id}`)} />
             ))}
             {isProcessing && !awaitingUserResponse && (
               <ChatMessage message={{ id: 'typing', sender: 'bot', type: 'loading', timestamp: '' }} onQuickReply={() => { }} />

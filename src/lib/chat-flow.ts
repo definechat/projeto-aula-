@@ -40,7 +40,7 @@ export const chatFlow: ChatStep[] = [
   {
     id: 6,
     sender: 'bot',
-    type: 'audio',
+    type: 'quick-reply',
     content: "Enfim minha linda... antes de ir ao que interessa me chamo MiKE, ta ! e preciso saber quantos Kg voce ficaria feliz de emagrecer e qual parte do corpo te incomoda mais a senhora",
     audioSrc: '/audio/quantos-kg.mp3',
     audioDuration: 11,
@@ -50,8 +50,7 @@ export const chatFlow: ChatStep[] = [
         { text: "10kg - Barriga", value: '10_barriga' },
         { text: "15kg - Corpo todo", value: '15_corpo' },
         { text: "20kg+ - Me incomoda tudo", value: '20_tudo' }
-    ],
-    type: 'quick-reply'
+    ]
   },
   {
     id: 7,
@@ -109,11 +108,10 @@ export const chatFlow: ChatStep[] = [
   {
     id: 14,
     sender: 'bot',
-    type: 'text',
+    type: 'quick-reply',
     content: "Me fala uma coisa, a senhora está parecida com qual dessas clientes antes de emagrecer, 1, 2 ou 3?",
     delay: 1500,
     waitForUser: true,
-    type: 'quick-reply',
     options: [
         { text: "1", value: 1 },
         { text: "2", value: 2 },
@@ -123,13 +121,12 @@ export const chatFlow: ChatStep[] = [
   {
     id: 15,
     sender: 'bot',
-    type: 'audio',
+    type: 'quick-reply',
     content: "Entendi minha flor. Falar que você está 100% satisfeita com seu corpo quando usa uma roupa ou quando vê a gordura da barriga marcando na roupa, ao se olhar no espelho, se eu falar que você está feliz é mentira, né isso?",
     audioSrc: '/audio/satisfeita.mp3',
     audioDuration: 13,
     delay: 2000,
     waitForUser: true,
-    type: 'quick-reply',
     options: [
         { text: "Realmente preciso resolver essa gordura.", value: 'resolver' },
         { text: "Ando insatisfeita com meu corpo.", value: 'insatisfeita' }
@@ -141,17 +138,17 @@ export const chatFlow: ChatStep[] = [
     type: 'text',
     content: "Me fale qual dos tratamentos a senhora mais gostou, G, GG ou XG?",
     delay: 1500,
+    waitForUser: true,
   },
   {
     id: 17,
     sender: 'bot',
-    type: 'audio',
+    type: 'quick-reply',
     content: "Lembrando, se você tiver medo de comprar online, vou resolver agora. Sabia que um golpista nunca vende no cartão? Porque no cartão, se a senhora ligar e pedir estorno seu dinheiro volta. Por isso que falo pra senhora, sua compra é 100% garantida e segura. Se a senhora observar a idade de nossas clientes vai entender que de fato 'essa senhora tá falando a verdade', são pessoas de idade, você viu isso?",
     audioSrc: '/audio/medo-comprar.mp3',
     audioDuration: 23,
     delay: 2000,
     waitForUser: true,
-    type: 'quick-reply',
     options: [
         { text: "Vi sim", value: 'vi_sim' },
         { text: "Gostei", value: 'gostei' }
@@ -160,13 +157,12 @@ export const chatFlow: ChatStep[] = [
   {
     id: 18,
     sender: 'bot',
-    type: 'audio',
+    type: 'quick-reply',
     content: "Então a gordura que incomoda e te afeta, você quer se livrar logo ou aguenta mais um ano com ela, podendo engordar mais?",
     audioSrc: '/audio/livrar-logo.mp3',
     audioDuration: 8,
     delay: 2000,
     waitForUser: true,
-    type: 'quick-reply',
     options: [
         { text: "Quero resolver logo!", value: 'resolver_logo' },
         { text: "Não aguento mais!", value: 'nao_aguento' }
@@ -202,6 +198,7 @@ export const chatFlow: ChatStep[] = [
     content: "Fique tranquila! Aquelas senhoras que você viu, você acha que elas eram saudáveis? De forma alguma! Elas vieram até nós iguais a muitas de vocês, com vários problemas de saúde e ao emagrecer com o grão resolveu tudo, incluindo as taxas! E eu sei que a senhora será a próxima! Basta dizer qual tratamento a senhora escolheu. Estou aguardando aqui para terminar seu atendimento. Pressão alta? Basta continuar tomando seus remédios normalmente, nosso produto vai agir mais no seu intestino! Aguardo você falar.",
     audioSrc: '/audio/duvidas-finais.mp3',
     audioDuration: 30,
-    delay: 2000
+    delay: 2000,
+    waitForUser: true
   }
 ];
