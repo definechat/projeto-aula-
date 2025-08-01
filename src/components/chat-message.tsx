@@ -39,7 +39,7 @@ export const ChatMessage = ({ message, onAudioEnd, onQuickReply }: ChatMessagePr
   );
 
   const TimeStamp = ({isMedia}: {isMedia?: boolean}) => (
-    <div className={cn("flex justify-end items-center gap-1 self-end", isMedia ? "text-white/80" : "text-muted-foreground/80")}>
+    <div className={cn("flex justify-end items-center gap-1 self-end", isUser ? "text-primary-foreground/80" : "text-muted-foreground/80", isMedia ? "text-white/80" : "")}>
       <span className="text-xs">{timestamp}</span>
       {isUser && status && <MessageStatus status={status} />}
     </div>
@@ -71,20 +71,17 @@ export const ChatMessage = ({ message, onAudioEnd, onQuickReply }: ChatMessagePr
             )}
             <div className={cn("p-2 pb-0", (content || audioDuration) && "absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent rounded-b-lg pt-6")}>
                 {content && <p className="text-sm my-1 text-white">{content}</p>}
-                {audioDuration && <AudioPlayer duration={audioDuration} onPlaybackEnd={onAudioEnd} sender='user' />}
+                {audioDuration && <AudioPlayer duration={audioDuration} onPlaybackEnd={onAudioEnd} sender='bot' autoPlay={false} />}
                 <TimeStamp isMedia/>
             </div>
           </div>
         );
       case 'audio':
         return (
-            <>
-                <p className="text-sm">{content}</p>
-                <div className="mt-1">
-                    <AudioPlayer duration={audioDuration!} onPlaybackEnd={onAudioEnd} sender={sender} autoPlay={true} />
-                </div>
+            <div className="flex items-end gap-2">
+                <AudioPlayer duration={audioDuration!} onPlaybackEnd={onAudioEnd} sender={sender} autoPlay={true} />
                 <TimeStamp />
-            </>
+            </div>
         )
 
       case 'quick-reply':
@@ -110,10 +107,10 @@ export const ChatMessage = ({ message, onAudioEnd, onQuickReply }: ChatMessagePr
 
       default:
         return (
-            <>
+            <div className="flex items-end gap-2">
                 <p className="text-sm whitespace-pre-wrap mr-4">{content}</p>
                 <TimeStamp />
-            </>
+            </div>
         );
     }
   };

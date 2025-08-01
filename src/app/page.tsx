@@ -69,19 +69,20 @@ export default function ChatPage() {
       return;
     }
 
-    if (isProcessing) {
-        if (step.type === 'audio') {
+    if (isProcessing && !awaitingUserResponse) {
+        const currentFlowStep = chatFlow[currentStep];
+        if (currentFlowStep.type === 'audio') {
             setHeaderStatus('gravando áudio...');
-        } else if (step.type === 'image-generating') {
-            setHeaderStatus('digitando...');
-        } else if (step.type !== 'quick-reply' && step.type !== 'cta') {
+        } else if (currentFlowStep.type === 'image-generating') {
+             setHeaderStatus('digitando...');
+        } else if (currentFlowStep.type !== 'quick-reply' && currentFlowStep.type !== 'cta') {
             setHeaderStatus('digitando...');
         }
     } else {
         setHeaderStatus('online');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isProcessing, currentStep]);
+  }, [isProcessing, currentStep, awaitingUserResponse]);
 
 
   useEffect(() => {
@@ -94,8 +95,15 @@ export default function ChatPage() {
 
     const runStep = async () => {
       setIsProcessing(true);
+      
       if (step.delay) {
         await new Promise(resolve => setTimeout(resolve, step.delay));
+      }
+
+      // Handle audio with recording simulation
+      if (step.type === 'audio') {
+        // Show "gravando..." for 7 seconds, then send message
+        await new Promise(resolve => setTimeout(resolve, 7000));
       }
 
       if (step.type === 'image-generating') {
@@ -132,9 +140,12 @@ export default function ChatPage() {
       if (step.waitForUser) {
         setAwaitingUserResponse(true);
         setIsProcessing(false);
-      } else if (!step.audioDuration) {
-        setIsProcessing(false);
-        handleNextStep();
+      } else {
+         // for audio, we set isProcessing to false inside onAudioEnd
+        if (step.type !== 'audio') {
+            setIsProcessing(false);
+            handleNextStep();
+        }
       }
     };
 
@@ -174,7 +185,7 @@ export default function ChatPage() {
                     {messages.map((msg) => (
                       <ChatMessage key={msg.id} message={msg} onAudioEnd={onAudioEnd} onQuickReply={handleQuickReply} />
                     ))}
-                    {isProcessing && !awaitingUserResponse && currentStep > 0 && chatFlow[currentStep-1]?.type !== 'image-generating' && chatFlow[currentStep]?.type !== 'audio' && (
+                    {isProcessing && !awaitingUserResponse && currentStep < chatFlow.length && chatFlow[currentStep]?.type !== 'audio' && chatFlow[currentStep]?.type !== 'image-generating' && (
                       <ChatMessage message={{ id: 'typing', sender: 'bot', type: 'loading', timestamp: '' }} onAudioEnd={()=>{}} onQuickReply={()=>{}}/>
                     )}
                 </div>

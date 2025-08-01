@@ -1,8 +1,10 @@
+
 "use client";
 
-import { Play, Pause } from 'lucide-react';
+import { Play, Pause, Mic2 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface AudioPlayerProps {
   duration: number;
@@ -73,12 +75,11 @@ export function AudioPlayer({ duration, onPlaybackEnd, sender, autoPlay = true }
   const colors = isBot ? "text-muted-foreground" : "text-primary-foreground/80";
   const progressBg = isBot ? "bg-gray-300 dark:bg-gray-600" : "bg-white/40";
   const progressFg = isBot ? "bg-primary" : "bg-white";
-  const buttonHover = isBot ? "hover:text-gray-900 dark:hover:text-gray-200" : "hover:text-white";
 
   return (
-    <div className={cn("flex items-center gap-2 w-full max-w-[220px]", colors)}>
-      <button onClick={togglePlay} className={cn("flex-shrink-0", buttonHover, {"text-primary": isBot})}>
-        {isPlaying ? <Pause className="h-6 w-6 fill-current" /> : <Play className="h-6 w-6 fill-current" />}
+    <div className={cn("flex items-center gap-2 w-full max-w-[250px]", colors)}>
+      <button onClick={togglePlay} className="flex-shrink-0">
+        {isPlaying ? <Pause className={cn("h-6 w-6 fill-current", {"text-primary": isBot})} /> : <Play className={cn("h-6 w-6 fill-current", {"text-primary": isBot})} />}
       </button>
       <div className="flex-grow flex items-center gap-2">
         <div className={cn("w-full h-1 rounded-full relative", progressBg)}>
@@ -87,7 +88,17 @@ export function AudioPlayer({ duration, onPlaybackEnd, sender, autoPlay = true }
           </div>
         </div>
       </div>
-      <span className="text-xs w-10 tabular-nums">{formatTime(duration)}</span>
+      <div className="flex items-center gap-2">
+        <span className="text-xs w-10 tabular-nums">{formatTime(duration)}</span>
+        {isBot && <Mic2 className="h-4 w-4 text-primary" />}
+        {isBot && !isPlaying && progress === 100 && <Mic2 className="h-4 w-4 text-muted-foreground" />}
+      </div>
+       {isUser && (
+           <Avatar className="h-8 w-8">
+            <AvatarImage src="https://placehold.co/100x100/25D366/FFFFFF.png?text=GK" data-ai-hint="logo grain" alt="GrãoKiseca" />
+            <AvatarFallback>GK</AvatarFallback>
+          </Avatar>
+        )}
     </div>
   );
 }
