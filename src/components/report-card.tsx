@@ -28,8 +28,7 @@ export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ u
   }
   
   const getProgressColor = (imc: number) => {
-    if (imc >= 35) return "bg-red-500"; // Obesidade Grau II e III
-    if (imc >= 30) return "bg-orange-500"; // Obesidade Grau I
+    if (imc >= 30) return "bg-red-500"; // Obesidade
     if (imc >= 25) return "bg-yellow-500"; // Sobrepeso
     if (imc >= 18.5) return "bg-green-500"; // Normal
     return "bg-blue-500"; // Abaixo
@@ -50,7 +49,7 @@ export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ u
             <p className={`font-semibold ${imcCategory.color}`}>{imcCategory.category}</p>
           </div>
           <div className="relative pt-1">
-            <Progress value={getProgressValue(imc)} className="h-3 [&>div]:bg-primary" />
+            <Progress value={getProgressValue(imc)} className={`h-3 [&>div]:${getProgressColor(imc)}`} />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
               <span>Abaixo</span>
               <span>Normal</span>
