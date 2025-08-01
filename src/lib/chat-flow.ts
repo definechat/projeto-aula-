@@ -1,0 +1,83 @@
+import type { ChatStep } from './types';
+
+export const chatFlow: ChatStep[] = [
+  {
+    id: 1,
+    sender: 'bot',
+    type: 'audio',
+    content: "Olá, querida! Aqui é a Ana, da equipe GrãoKiseca. Tudo bem?",
+    audioDuration: 4,
+    delay: 1500,
+  },
+  {
+    id: 2,
+    sender: 'bot',
+    type: 'text',
+    content: "Eu vi que você está buscando uma solução para emagrecer...",
+    delay: 2000,
+  },
+  {
+    id: 3,
+    sender: 'bot',
+    type: 'quick-reply',
+    content: "Já tentou de tudo e se frustrou com dietas?",
+    options: [
+      { text: "Sim, já desisti.", value: "sim" },
+      { text: "Não, sou nova nisso.", value: "nao" },
+    ],
+    waitForUser: true,
+    delay: 2500,
+  },
+  {
+    id: 4,
+    sender: 'bot',
+    type: 'audio',
+    content: "Eu te entendo... mas a verdade é que você não falhou. A sua frustração tem um motivo...",
+    audioDuration: 5,
+    delay: 1500,
+  },
+  {
+    id: 5,
+    sender: 'bot',
+    type: 'image-generating',
+    content: 'Só um momento, estou buscando uma foto para te mostrar...',
+    delay: 1500,
+  },
+  {
+    id: 6,
+    sender: 'bot',
+    type: 'image',
+    content: "Essa é a Ivani, nossa cliente estrela. Olha só a transformação dela!",
+    audioDuration: 4,
+    delay: 1500,
+  },
+  {
+    id: 7,
+    sender: 'bot',
+    type: 'video',
+    content: "E ela gravou um depoimento especial. Dá uma olhada no que ela tem a dizer...",
+    audioDuration: 3,
+    delay: 2000,
+  },
+  {
+    id: 8,
+    sender: 'bot',
+    type: 'text',
+    content: "Incrível, não é? A Ivani, assim como milhares de outras mulheres, descobriu um segredo que a indústria do emagrecimento não quer que você saiba.",
+    delay: 2500,
+  },
+  {
+    id: 9,
+    sender: 'bot',
+    type: 'text',
+    content: "É um método simples, baseado em um grão ancestral, que reprograma o seu corpo para queimar gordura de forma natural e definitiva.",
+    delay: 3000,
+  },
+  {
+    id: 10,
+    sender: 'bot',
+    type: 'cta',
+    content: "QUERO SABER O SEGREDO AGORA!",
+    delay: 3000,
+  },
+];
