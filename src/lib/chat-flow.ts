@@ -108,6 +108,14 @@ export const chatFlow: ChatStep[] = [
     delay: 2500,
   },
   {
+    id: 13.5,
+    sender: 'bot',
+    type: 'image',
+    content: "Ivani, uma de nossas clientes felizes!",
+    imageSrc: '/images/ivani-antes-depois.jpg',
+    delay: 2000,
+  },
+  {
     id: 14,
     sender: 'bot',
     type: 'quick-reply',
