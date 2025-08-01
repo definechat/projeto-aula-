@@ -160,7 +160,7 @@ export default function ChatPage() {
 
   return (
     <div className="bg-background flex justify-center items-center min-h-screen p-0 sm:p-4">
-        <div className="w-full h-full sm:max-w-md sm:h-[90vh] sm:max-h-[850px] flex flex-col bg-white dark:bg-black sm:rounded-2xl shadow-2xl overflow-hidden">
+        <div className="w-full h-screen sm:max-w-md sm:h-[90vh] sm:max-h-[850px] flex flex-col bg-white dark:bg-black sm:rounded-2xl shadow-2xl overflow-hidden">
             <header className="flex items-center p-3 bg-accent text-accent-foreground shadow-md z-10 flex-shrink-0">
                 <Button variant="ghost" size="icon" className="text-accent-foreground hover:bg-white/10 rounded-full h-9 w-9">
                   <ArrowLeft />
