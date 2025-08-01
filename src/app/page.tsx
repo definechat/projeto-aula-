@@ -89,13 +89,13 @@ export default function ChatPage() {
         setShowReport(false);
         addMessage({ sender: 'bot', type: 'text', content: "Ótimo! Seu relatório foi baixado. Agora vamos continuar para a parte final." });
         setAwaitingUserResponse(false);
-        handleNextStep(2); // Skips the report step and goes to the next one
+        handleNextStep(); 
     } catch (error) {
         console.error("Erro ao gerar a imagem do relatório:", error);
         setShowReport(false);
         addMessage({ sender: 'bot', type: 'text', content: "Tive um problema ao gerar seu relatório. Vamos continuar mesmo assim." });
         setAwaitingUserResponse(false);
-        handleNextStep(2); // Skips the report step and goes to the next one
+        handleNextStep();
     }
   };
 
@@ -154,7 +154,6 @@ export default function ChatPage() {
           addMessage({ sender: 'bot', type: 'text', content: "Parece que não tenho suas informações. Vamos pular esta etapa." });
           handleNextStep();
         }
-        // Don't auto-advance here. The flow continues after download/interaction.
         return;
       }
       
@@ -166,7 +165,7 @@ export default function ChatPage() {
 
       if (step.audioDuration) messageToAdd.audioDuration = step.audioDuration;
       if (step.type === 'image' && step.imageSrc) messageToAdd.imageSrc = step.imageSrc;
-      if (step.type === 'quick-reply') messageToAdd.options = step.options;
+      if (step.type === 'quick-reply' && step.options) messageToAdd.options = step.options;
       if (step.audioSrc) messageToAdd.audioSrc = step.audioSrc;
       
       addMessage(messageToAdd);
@@ -183,8 +182,8 @@ export default function ChatPage() {
 
   return (
     <div className="bg-background flex justify-center items-center min-h-screen p-0 sm:p-4">
-      <div className="w-full h-screen sm:h-auto sm:max-w-md sm:aspect-[9/16] sm:max-h-[850px] flex flex-col bg-white dark:bg-black sm:rounded-2xl shadow-2xl overflow-hidden">
-        <header className="flex items-center p-3 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-md z-10 flex-shrink-0">
+      <div className="w-full h-screen sm:h-[90vh] sm:max-w-md sm:max-h-[850px] flex flex-col bg-white dark:bg-black sm:rounded-2xl shadow-2xl overflow-hidden">
+        <header className="flex-shrink-0 flex items-center p-3 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-md z-10">
           <Button variant="ghost" size="icon" className="text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-9 w-9">
             <ArrowLeft />
           </Button>
@@ -226,7 +225,7 @@ export default function ChatPage() {
           </div>
         </main>
 
-        <footer className="p-2 sm:p-3 bg-gray-100 dark:bg-gray-900 border-t flex-shrink-0">
+        <footer className="flex-shrink-0 p-2 sm:p-3 bg-gray-100 dark:bg-gray-900 border-t">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-10 w-10"><Smile /></Button>
             <Input
