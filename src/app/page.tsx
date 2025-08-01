@@ -70,7 +70,7 @@ export default function ChatPage() {
   const handleIMCSubmit = (data: UserInfo) => {
     setUserInfo(data);
     setShowIMCForm(false);
-    setAwaitingUserResponse(false); // This was the missing piece
+    setAwaitingUserResponse(false); 
     addMessage({ sender: 'user', type: 'text', content: `Pronto! Meus dados: ${data.weight}kg e ${data.height}cm.` });
     handleNextStep();
   };
@@ -87,11 +87,13 @@ export default function ChatPage() {
         document.body.removeChild(link);
         setShowLeadModal(false);
         addMessage({ sender: 'bot', type: 'text', content: "Ótimo! Seu relatório foi baixado. Agora vamos continuar para a parte final." });
-        handleNextStep();
+        setAwaitingUserResponse(false);
+        handleNextStep(); // This continues the flow
     } catch (error) {
         console.error("Erro ao gerar a imagem do relatório:", error);
         addMessage({ sender: 'bot', type: 'text', content: "Tive um problema ao gerar seu relatório. Vamos continuar mesmo assim." });
-        handleNextStep();
+        setAwaitingUserResponse(false);
+        handleNextStep(); // This continues the flow
     }
   };
 
@@ -148,8 +150,9 @@ export default function ChatPage() {
           setAwaitingUserResponse(true);
         } else {
           addMessage({ sender: 'bot', type: 'text', content: "Parece que não tenho suas informações. Vamos pular esta etapa." });
+          handleNextStep();
         }
-        handleNextStep();
+        // Don't auto-advance here. The flow continues after download/interaction.
         return;
       }
       
@@ -162,6 +165,7 @@ export default function ChatPage() {
       if (step.audioDuration) messageToAdd.audioDuration = step.audioDuration;
       if (step.type === 'image' && step.imageSrc) messageToAdd.imageSrc = step.imageSrc;
       if (step.type === 'quick-reply') messageToAdd.options = step.options;
+      if (step.audioSrc) messageToAdd.audioSrc = step.audioSrc;
       
       addMessage(messageToAdd);
       
@@ -279,3 +283,5 @@ export default function ChatPage() {
     </div>
   );
 }
+
+    

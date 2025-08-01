@@ -7,7 +7,8 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'audio',
     content: "Olá! Sou o MiKE, seu terapeuta de emagrecimento virtual. Estou aqui para te ajudar a entender melhor suas necessidades e traçar um plano para você alcançar seus objetivos.",
-    audioDuration: 10,
+    audioSrc: '/audio/welcome.mp3',
+    audioDuration: 7,
   },
   {
     id: 2,
@@ -47,7 +48,7 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'image',
     content: "Veja o caso da Ivani, uma de nossas clientes estrela, que eliminou 20kg e transformou sua vida.",
-    imageSrc: 'https://placehold.co/600x400',
+    imageSrc: 'https://placehold.co/400x400',
     delay: 1500,
   },
   {
@@ -65,3 +66,5 @@ export const chatFlow: ChatStep[] = [
     delay: 2000
   }
 ];
+
+    

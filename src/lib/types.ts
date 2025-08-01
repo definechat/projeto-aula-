@@ -5,6 +5,7 @@ export interface ChatStep {
   type: 'text' | 'audio' | 'image' | 'video' | 'quick-reply' | 'cta' | 'calculator' | 'report';
   content?: string;
   imageSrc?: string;
+  audioSrc?: string;
   audioDuration?: number; // in seconds
   waitForUser?: boolean;
   options?: { text: string; value: any }[];
@@ -16,6 +17,7 @@ export interface Message {
   sender: 'bot' | 'user';
   type: 'text' | 'audio' | 'image' | 'video' | 'quick-reply' | 'cta' | 'loading';
   content?: string;
+  audioSrc?: string;
   audioDuration?: number;
   imageSrc?: string;
   timestamp: string;
@@ -27,3 +29,5 @@ export interface UserInfo {
   weight: number;
   height: number;
 }
+
+    

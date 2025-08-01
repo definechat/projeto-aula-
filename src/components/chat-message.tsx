@@ -2,11 +2,12 @@
 "use client";
 
 import Image from "next/image";
-import { Check, CheckCheck, Clock, Loader2, PlayCircle } from 'lucide-react';
+import { Check, CheckCheck, Clock, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Message } from '@/lib/types';
 import { Button } from "./ui/button";
 import { TypingIndicator } from './typing-indicator';
+import { AudioPlayer } from "@/components/audio-player";
 
 const MessageStatus = ({ status }: { status: Message['status'] }) => {
   if (status === 'read') return <CheckCheck className="h-4 w-4 text-blue-500" />;
@@ -21,7 +22,7 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
-  const { sender, type, content, timestamp, imageSrc, audioDuration, status, options } = message;
+  const { sender, type, content, timestamp, imageSrc, audioSrc, audioDuration, status, options } = message;
   const isUser = sender === 'user';
 
   const messageContainerClasses = cn(
@@ -34,11 +35,15 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
     isUser ? 'bg-teal-500 text-white rounded-br-none' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none',
     { 'p-1 bg-transparent dark:bg-transparent shadow-none': (type === 'image' || type === 'video') && imageSrc },
     { 'p-2 bg-gray-200 dark:bg-gray-700': type === 'loading' },
-    { 'bg-transparent dark:bg-transparent shadow-none': type === 'audio' }
+    { 'bg-transparent dark:bg-transparent shadow-none w-full max-w-[85%] sm:max-w-[75%]': type === 'audio' }
   );
-
-  const TimeStamp = ({isMedia}: {isMedia?: boolean}) => (
-    <div className={cn("flex justify-end items-center gap-1 self-end text-xs", isUser ? "text-white/80" : "text-gray-500", isMedia ? "absolute bottom-1.5 right-1.5 text-white/80" : "")}>
+  
+  const TimeStamp = ({isMedia, isAudio}: {isMedia?: boolean, isAudio?: boolean}) => (
+    <div className={cn("flex justify-end items-center gap-1 self-end text-xs", 
+        isUser ? "text-white/80" : "text-gray-500", 
+        isMedia ? "absolute bottom-1.5 right-1.5 text-white/80" : "",
+        isAudio ? "mt-1" : ""
+    )}>
       <span>{timestamp}</span>
       {isUser && status && <MessageStatus status={status} />}
     </div>
@@ -54,15 +59,10 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
         return (
           <div className="relative">
             {imageSrc ? (
-              <Image src={imageSrc} alt={content || 'Chat image'} width={300} height={300} className="rounded-lg object-cover" />
+              <Image src={imageSrc} alt={content || 'Chat image'} width={400} height={400} className="rounded-lg object-cover" data-ai-hint="happy woman" />
             ) : (
               <div className="w-[300px] h-[300px] bg-gray-200 dark:bg-gray-800 rounded-lg flex items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
-              </div>
-            )}
-            {type === 'video' && (
-              <div className="absolute inset-0 bg-black/30 flex items-center justify-center rounded-lg cursor-pointer">
-                <PlayCircle className="h-16 w-16 text-white/80" />
               </div>
             )}
             <div className="absolute bottom-0 left-0 right-0 p-2 pt-6 bg-gradient-to-t from-black/60 to-transparent rounded-b-lg">
@@ -73,12 +73,14 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
         );
       
       case 'audio':
-        // Simplified audio message, will be part of a future implementation
         return (
-            <div className='flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300'>
-                <PlayCircle className="h-5 w-5" />
-                <span>Áudio: {content}</span>
+          <div className={cn('w-full flex items-center gap-2 text-sm p-2 rounded-lg', isUser ? 'bg-teal-500 text-white' : 'bg-gray-200 dark:bg-gray-700')}>
+            {!isUser && <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 flex-shrink-0"></div>}
+            <div className="flex-grow">
+              <AudioPlayer src={audioSrc} duration={audioDuration} />
+              <TimeStamp isAudio={true} />
             </div>
+          </div>
         );
 
       case 'quick-reply':
