@@ -86,11 +86,13 @@ export default function ChatPage() {
         link.click();
         document.body.removeChild(link);
         setShowLeadModal(false);
+        setShowReport(false);
         addMessage({ sender: 'bot', type: 'text', content: "Ótimo! Seu relatório foi baixado. Agora vamos continuar para a parte final." });
         setAwaitingUserResponse(false);
         handleNextStep(); // This continues the flow
     } catch (error) {
         console.error("Erro ao gerar a imagem do relatório:", error);
+        setShowReport(false);
         addMessage({ sender: 'bot', type: 'text', content: "Tive um problema ao gerar seu relatório. Vamos continuar mesmo assim." });
         setAwaitingUserResponse(false);
         handleNextStep(); // This continues the flow
@@ -130,7 +132,7 @@ export default function ChatPage() {
     const runStep = async () => {
       setIsProcessing(true);
       
-      const delay = step.type === 'audio' ? (step.audioDuration || 0) * 1000 : (step.delay || 0);
+      const delay = step.type === 'audio' ? 7000 : (step.delay || 0);
       
       if (delay > 0) {
         await new Promise(resolve => setTimeout(resolve, delay));
