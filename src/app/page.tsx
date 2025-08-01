@@ -89,13 +89,13 @@ export default function ChatPage() {
         setShowReport(false);
         addMessage({ sender: 'bot', type: 'text', content: "Ótimo! Seu relatório foi baixado. Agora vamos continuar para a parte final." });
         setAwaitingUserResponse(false);
-        handleNextStep(); // This continues the flow
+        handleNextStep(2); // Skips the report step and goes to the next one
     } catch (error) {
         console.error("Erro ao gerar a imagem do relatório:", error);
         setShowReport(false);
         addMessage({ sender: 'bot', type: 'text', content: "Tive um problema ao gerar seu relatório. Vamos continuar mesmo assim." });
         setAwaitingUserResponse(false);
-        handleNextStep(); // This continues the flow
+        handleNextStep(2); // Skips the report step and goes to the next one
     }
   };
 
@@ -218,7 +218,7 @@ export default function ChatPage() {
                 <div className="flex justify-center my-2">
                   <Button onClick={() => setShowLeadModal(true)} size="lg" className="bg-green-500 hover:bg-green-600 text-white font-bold shadow-lg">
                     <Download className="mr-2 h-5 w-5" />
-                    Baixar Relatório em JPG
+                    Baixar Relatório e Continuar
                   </Button>
                 </div>
               </>
@@ -245,9 +245,9 @@ export default function ChatPage() {
         <Dialog open={showLeadModal} onOpenChange={setShowLeadModal}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Quase lá! Baixe seu relatório personalizado.</DialogTitle>
+              <DialogTitle>Quase lá! Baixe seu check-up gratuito.</DialogTitle>
               <DialogDescription>
-                Por favor, preencha seus dados para gerarmos seu relatório. Ele será seu guia inicial nesta jornada de transformação!
+                Por favor, preencha seus dados para receber seu check-up. Ele será seu guia inicial nesta jornada de transformação!
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -255,7 +255,7 @@ export default function ChatPage() {
                     <User className="h-5 w-5 text-gray-500" />
                     <Input
                         id="name"
-                        placeholder="Seu nome completo"
+                        placeholder="Seu primeiro nome"
                         value={leadInfo.name}
                         onChange={(e) => setLeadInfo({ ...leadInfo, name: e.target.value })}
                         className="col-span-3"
