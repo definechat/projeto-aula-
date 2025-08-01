@@ -8,6 +8,7 @@ import type { Message } from '@/lib/types';
 import { AudioPlayer } from './audio-player';
 import { Button } from "./ui/button";
 import { TypingIndicator } from './typing-indicator';
+import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 
 const MessageStatus = ({ status }: { status: Message['status'] }) => {
   if (status === 'read') return <CheckCheck className="h-4 w-4 text-blue-500" />;
@@ -35,7 +36,8 @@ export const ChatMessage = ({ message, onAudioEnd, onQuickReply }: ChatMessagePr
     'relative w-fit max-w-[85%] sm:max-w-[75%] rounded-xl px-3 py-1.5 shadow-sm flex flex-col',
     isUser ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-muted text-muted-foreground rounded-bl-none',
     { 'p-1': (type === 'image' || type === 'video') && imageSrc },
-    { 'p-2': type === 'loading' }
+    { 'p-2': type === 'loading' },
+    { 'flex-row items-end gap-2': type === 'audio' && !isUser }
   );
 
   const TimeStamp = ({isMedia}: {isMedia?: boolean}) => (
@@ -79,8 +81,18 @@ export const ChatMessage = ({ message, onAudioEnd, onQuickReply }: ChatMessagePr
       case 'audio':
         return (
             <div className="flex items-end gap-2">
-                <AudioPlayer duration={audioDuration!} onPlaybackEnd={onAudioEnd} sender={sender} autoPlay={true} />
-                <TimeStamp />
+                { !isUser && (
+                  <Avatar className="h-8 w-8 self-start -ml-1">
+                    <AvatarImage src="https://placehold.co/100x100/25D366/FFFFFF.png?text=GK" data-ai-hint="logo grain" alt="GrãoKiseca" />
+                    <AvatarFallback>GK</AvatarFallback>
+                  </Avatar>
+                )}
+                <div className={cn('rounded-xl px-3 py-1.5 shadow-sm flex flex-col', isUser ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-muted text-muted-foreground rounded-bl-none')}>
+                  <div className="flex items-end gap-2">
+                      <AudioPlayer duration={audioDuration!} onPlaybackEnd={onAudioEnd} sender={sender} autoPlay={true} />
+                      <TimeStamp />
+                  </div>
+                </div>
             </div>
         )
 
@@ -117,6 +129,14 @@ export const ChatMessage = ({ message, onAudioEnd, onQuickReply }: ChatMessagePr
   
   if (type === 'quick-reply' || type === 'cta') {
     return renderContent();
+  }
+
+  if (type === 'audio') {
+    return (
+      <div className={messageContainerClasses}>
+          {renderContent()}
+      </div>
+    );
   }
 
   return (

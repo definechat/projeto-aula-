@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Play, Pause, Mic2 } from 'lucide-react';
+import { Play, Pause } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -43,17 +43,18 @@ export function AudioPlayer({ duration, onPlaybackEnd, sender, autoPlay = true }
   useEffect(() => {
     let startTimeout: NodeJS.Timeout;
     if (autoPlay) {
-      setIsPlaying(true);
-      // Small delay before autoplaying
+      // Small delay before autoplaying to allow user to see the message first
       startTimeout = setTimeout(startPlayback, 300);
     }
+    
+    // Cleanup function
     return () => {
       clearTimeout(startTimeout);
       if (intervalRef.current) clearInterval(intervalRef.current);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoPlay]);
+  }, [autoPlay, duration]); // Added duration to dependencies
 
   const togglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -91,8 +92,6 @@ export function AudioPlayer({ duration, onPlaybackEnd, sender, autoPlay = true }
       </div>
       <div className="flex items-center gap-2">
         <span className="text-xs w-10 tabular-nums">{formatTime(duration)}</span>
-        {isBot && <Mic2 className="h-4 w-4 text-primary" />}
-        {isBot && !isPlaying && progress === 100 && <Mic2 className="h-4 w-4 text-muted-foreground" />}
       </div>
        {!isBot && (
            <Avatar className="h-8 w-8">
