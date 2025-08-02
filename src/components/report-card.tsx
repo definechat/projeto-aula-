@@ -28,7 +28,8 @@ export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ u
   }
   
   const getProgressColor = (imc: number) => {
-    if (imc >= 30) return "bg-red-500"; // Obesidade
+    if (imc >= 35) return "bg-red-500"; // Obesidade II & III
+    if (imc >= 30) return "bg-red-500"; // Obesidade I
     if (imc >= 25) return "bg-yellow-500"; // Sobrepeso
     if (imc >= 18.5) return "bg-green-500"; // Normal
     return "bg-blue-500"; // Abaixo
@@ -93,7 +94,7 @@ export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ u
         {/* Call to Action */}
         <div className="text-center bg-teal-50 dark:bg-teal-900/50 p-3 rounded-lg">
             <p className="text-sm text-teal-700 dark:text-teal-200">
-                Este é o primeiro passo! Com o <span className="font-bold">GrãoKiseca</span>, você pode alcançar seu peso ideal de forma saudável e natural.
+                Este é o primeiro passo! Você pode alcançar seu peso ideal de forma saudável e natural. Baixe o relatório para seu celular e acesse quando preciso.
             </p>
         </div>
       </CardContent>
