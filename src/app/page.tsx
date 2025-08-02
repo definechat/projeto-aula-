@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { ArrowLeft, Phone, Video as VideoIcon, MoreVertical, Send, Smile, Paperclip, Download, User, Weight, Ruler } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,7 @@ export default function ChatPage() {
   const [showReport, setShowReport] = useState(false);
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [leadInfo, setLeadInfo] = useState({ name: '', whatsapp: '' });
+  const [inputValue, setInputValue] = useState('');
 
   const { trackEvent } = useAnalytics();
 
@@ -73,6 +74,24 @@ export default function ChatPage() {
     setAwaitingUserResponse(false);
     handleNextStep();
   };
+
+  const handleTextMessageSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!inputValue.trim() || !awaitingUserResponse) return;
+
+    const step = chatFlow[currentStep];
+    addMessage({ sender: 'user', type: 'text', content: inputValue.trim() }, `step_${step.id}`);
+    
+    // If the current step was asking for the name, store it in the leadInfo
+    if (step.id === 0.3) {
+        setLeadInfo(prev => ({ ...prev, name: inputValue.trim() }));
+    }
+
+    setInputValue('');
+    setAwaitingUserResponse(false);
+    handleNextStep();
+  };
+
 
   const handleIMCSubmit = (data: UserInfo) => {
     const step = chatFlow[currentStep];
@@ -142,7 +161,7 @@ export default function ChatPage() {
     const runStep = async () => {
       setIsProcessing(true);
       
-      const delay = step.type === 'audio' ? 7000 : (step.delay || 0);
+      const delay = step.type === 'audio' ? 2000 : (step.delay || 0);
       
       if (delay > 0) {
         await new Promise(resolve => setTimeout(resolve, delay));
@@ -238,19 +257,21 @@ export default function ChatPage() {
         </main>
 
         <footer className="flex-shrink-0 p-2 md:p-3 bg-gray-100 dark:bg-gray-900 border-t">
-          <div className="flex items-center gap-2">
+          <form onSubmit={handleTextMessageSubmit} className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-10 w-10"><Smile /></Button>
             <Input
               type="text"
               placeholder="Mensagem"
               className="flex-grow rounded-full px-4 bg-white dark:bg-gray-800"
-              disabled={true}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              disabled={!awaitingUserResponse || showIMCForm || showReport}
             />
             <Button variant="ghost" size="icon" className="text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full h-10 w-10"><Paperclip /></Button>
-            <Button size="icon" className="bg-teal-500 hover:bg-teal-600 rounded-full h-10 w-10">
+            <Button type="submit" size="icon" className="bg-teal-500 hover:bg-teal-600 rounded-full h-10 w-10" disabled={!awaitingUserResponse || !inputValue.trim()}>
               <Send />
             </Button>
-          </div>
+          </form>
         </footer>
 
         <Dialog open={showLeadModal} onOpenChange={setShowLeadModal}>

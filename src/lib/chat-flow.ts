@@ -3,6 +3,28 @@ import type { ChatStep } from './types';
 
 export const chatFlow: ChatStep[] = [
   {
+    id: 0.1,
+    sender: 'bot',
+    type: 'text',
+    content: "Olá, tudo bem!",
+    delay: 1500,
+  },
+  {
+    id: 0.2,
+    sender: 'bot',
+    type: 'text',
+    content: "Você sabia que é impossível emagrecer de vez sem antes fazer um check-up de emagrecimento?",
+    delay: 2500,
+  },
+   {
+    id: 0.3,
+    sender: 'bot',
+    type: 'text',
+    content: "Receba o seu gratuitamente! Para isso, basta me dizer como posso te chamar.",
+    delay: 2000,
+    waitForUser: true,
+  },
+  {
     id: 1,
     sender: 'bot',
     type: 'calculator',
@@ -145,10 +167,15 @@ export const chatFlow: ChatStep[] = [
   {
     id: 16,
     sender: 'bot',
-    type: 'text',
+    type: 'quick-reply',
     content: "Me fale qual dos tratamentos a senhora mais gostou, G, GG ou XG?",
     delay: 1500,
     waitForUser: true,
+    options: [
+        { text: "G - R$129", value: 'g' },
+        { text: "GG - R$337", value: 'gg' },
+        { text: "XG - R$447", value: 'xg' }
+    ],
   },
   {
     id: 17,
