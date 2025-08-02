@@ -107,7 +107,10 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
       default:
         return (
             <div className="flex items-end gap-2">
-                <p className="text-sm md:text-base whitespace-pre-wrap mr-4">{content}</p>
+                <p 
+                    className="text-sm md:text-base whitespace-pre-wrap mr-4"
+                    dangerouslySetInnerHTML={{ __html: content?.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') || '' }}
+                />
                 <TimeStamp />
             </div>
         );
