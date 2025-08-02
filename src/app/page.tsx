@@ -55,9 +55,16 @@ export default function ChatPage() {
     if (stepId) {
       trackEvent(stepId);
     }
+    
+    let finalContent = message.content;
+    if (message.sender === 'bot' && message.content?.includes('{name}')) {
+        finalContent = message.content.replace('{name}', leadInfo.name.split(' ')[0] || '');
+    }
+
 
     setMessages(prev => [...prev, {
       ...message,
+      content: finalContent,
       id: crypto.randomUUID(),
       timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       status: 'read'
@@ -82,10 +89,12 @@ export default function ChatPage() {
     const step = chatFlow[currentStep];
     addMessage({ sender: 'user', type: 'text', content: inputValue.trim() }, `step_${step.id}`);
     
-    // If the current step was asking for the name, store it in the leadInfo
-    if (step.id === 0.3) {
+    if (step.id === 0.3) { // Capturing name
         setLeadInfo(prev => ({ ...prev, name: inputValue.trim() }));
+    } else if (step.id === 0.4) { // Capturing whatsapp
+        setLeadInfo(prev => ({ ...prev, whatsapp: inputValue.trim() }));
     }
+
 
     setInputValue('');
     setAwaitingUserResponse(false);
@@ -209,7 +218,7 @@ export default function ChatPage() {
     };
 
     runStep();
-  }, [currentStep, awaitingUserResponse, userInfo]);
+  }, [currentStep, awaitingUserResponse, userInfo, leadInfo.name]);
 
   return (
     <div className="bg-background flex justify-center items-center min-h-screen p-0 md:p-4">

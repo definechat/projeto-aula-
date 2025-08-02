@@ -36,7 +36,7 @@ export function IMCForm({ onSubmit }: IMCFormProps) {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Calculator className="h-6 w-6 text-teal-500" />
-                        Calculadora de Saúde
+                        Calculadora de Emagrecimento
                     </CardTitle>
                     <CardDescription>
                         Insira seus dados para gerarmos um relatório personalizado para você.

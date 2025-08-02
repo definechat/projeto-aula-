@@ -20,8 +20,16 @@ export const chatFlow: ChatStep[] = [
     id: 0.3,
     sender: 'bot',
     type: 'text',
-    content: "Receba o seu gratuitamente! Para isso, basta me dizer como posso te chamar.",
+    content: "Receba o seu gratuitamente. Me diz teu nome.",
     delay: 2000,
+    waitForUser: true,
+  },
+  {
+    id: 0.4,
+    sender: 'bot',
+    type: 'text',
+    content: "Prazer, {name}! Por último, me diz teu whatsapp pra enviar o checkup.",
+    delay: 1500,
     waitForUser: true,
   },
   {
