@@ -7,21 +7,21 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'text',
     content: "Olá, tudo bem? 👋",
-    delay: 3000,
+    delay: 7000,
   },
   {
     id: 0.2,
     sender: 'bot',
     type: 'text',
     content: "Você sabia que é **impossível emagrecer de vez** sem antes fazer um **check-up de emagrecimento?**",
-    delay: 5000,
+    delay: 7000,
   },
    {
     id: 0.3,
     sender: 'bot',
     type: 'text',
     content: "Receba o seu **gratuitamente!** 🎁\nMe diz teu nome.",
-    delay: 4000,
+    delay: 7000,
     waitForUser: true,
   },
   {
@@ -29,7 +29,7 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'text',
     content: "Prazer, {name}! Por último, me diz teu **whatsapp** pra enviar o checkup.",
-    delay: 4000,
+    delay: 7000,
     waitForUser: true,
   },
   {
@@ -49,7 +49,7 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'text',
     content: "Oi minha querida, seja bem vinda! 👋",
-    delay: 4000,
+    delay: 7000,
   },
   {
     id: 4,
@@ -107,7 +107,7 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'text',
     content: "Vou te falar como ele age no corpo e já passo o valor, tá?",
-    delay: 5000
+    delay: 7000
   },
   {
     id: 10,
@@ -121,21 +121,21 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'text',
     content: "Vamos ao que interessa, tá? 💰",
-    delay: 4000
+    delay: 7000
   },
   {
     id: 12,
     sender: 'bot',
     type: 'text',
     content: "No seu caso, para o seu peso, temos **3 opções de tratamentos: G, GG, XG**.",
-    delay: 5000,
+    delay: 7000,
   },
   {
     id: 13,
     sender: 'bot',
     type: 'text',
     content: "**G** (para eliminar de 5 a 8kg): **R$129**\n**GG** (para eliminar de 10 a 15kg): **R$337**\n**XG** (para eliminar de 15 a 25kg): **R$447**\n\nAceitamos **PIX e Cartão parcelado**.",
-    delay: 6000,
+    delay: 7000,
   },
   {
     id: 13.5,
