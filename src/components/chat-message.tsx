@@ -33,13 +33,6 @@ interface ChatMessageProps {
 export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
   const { id, sender, type, content, timestamp, imageSrc: initialImageSrc, audioSrc, audioDuration, status, options, beforeImageSrc, afterImageSrc, autoplay } = message;
   const isUser = sender === 'user';
-
-  const [imageSrc, setImageSrc] = useState(initialImageSrc);
-  
-  const handleImageError = () => {
-    // Fallback to a placeholder image if the original image fails to load
-    setImageSrc('https://placehold.co/400x400.png');
-  };
   
   const messageContainerClasses = cn(
     'flex w-full',
@@ -49,7 +42,7 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
   const messageBubbleClasses = cn(
     'relative w-fit max-w-[85%] sm:max-w-[75%] rounded-xl px-3 py-1.5 shadow-sm flex flex-col',
     isUser ? 'bg-teal-500 text-white rounded-br-none' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none',
-    { 'p-1 bg-transparent dark:bg-transparent shadow-none': (type === 'image' || type === 'video') && imageSrc },
+    { 'p-1 bg-transparent dark:bg-transparent shadow-none': (type === 'image' || type === 'video') && initialImageSrc },
     { 'p-2 bg-gray-200 dark:bg-gray-700': type === 'loading' },
     { 'bg-transparent dark:bg-transparent shadow-none w-full max-w-[85%] sm:max-w-[75%]': type === 'audio' || type === 'before-after' }
   );
@@ -84,16 +77,18 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
       case 'video':
         return (
           <div className="relative">
-            {imageSrc ? (
-              <Image 
-                src={imageSrc} 
-                alt={content || 'Chat image'} 
-                width={400} 
-                height={400} 
-                className="rounded-lg object-cover" 
-                data-ai-hint="happy woman"
-                onError={handleImageError}
-              />
+            {initialImageSrc ? (
+                <img 
+                    src={initialImageSrc} 
+                    alt={content || 'Chat image'} 
+                    className="rounded-lg object-cover w-full h-auto"
+                    style={{ maxWidth: '400px', display: 'block' }}
+                    onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.onerror = null;
+                        target.src='https://placehold.co/400x400.png';
+                    }}
+                />
             ) : (
               <div className="w-[300px] h-[300px] bg-gray-200 dark:bg-gray-800 rounded-lg flex items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
