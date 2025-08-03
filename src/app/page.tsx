@@ -97,7 +97,8 @@ export default function ChatPage() {
     const step = chatFlow[currentStep];
     addMessage({ sender: 'user', type: 'text', content: inputValue.trim() }, `step_${step.id}`);
     
-    if (step.id === 0.36) { // Capturing name after before-after
+    if (step.id === 0.3) { // Capturing name
+        setLeadInfo(prev => ({ ...prev, name: inputValue.trim() }));
         setAwaitingUserResponse(false);
         handleNextStep();
     } else if (step.id === 0.4) { // Capturing whatsapp
