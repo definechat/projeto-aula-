@@ -8,28 +8,19 @@ import { Slider } from './ui/slider';
 interface AudioPlayerProps {
     src: string;
     duration?: number;
-    audioRef?: HTMLAudioElement;
 }
 
-export function AudioPlayer({ src, duration = 0, audioRef }: AudioPlayerProps) {
+export function AudioPlayer({ src, duration = 0 }: AudioPlayerProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [actualDuration, setActualDuration] = useState(duration);
     
-    // We don't create a new audio element here, we use the one passed via props.
-    // This avoids hydration issues.
-    const internalAudioRef = useRef<HTMLAudioElement | undefined>(audioRef);
+    const audioRef = useRef<HTMLAudioElement>(null);
 
     useEffect(() => {
-        const audio = internalAudioRef.current;
+        const audio = audioRef.current;
         if (!audio) return;
         
-        // When the src changes, update the audio element
-        if(audio.src !== src) {
-          audio.src = src;
-          audio.load();
-        }
-
         const handleLoadedMetadata = () => {
              setActualDuration(duration > 0 ? duration : audio.duration);
         };
@@ -38,7 +29,7 @@ export function AudioPlayer({ src, duration = 0, audioRef }: AudioPlayerProps) {
         const handlePlaybackEnd = () => {
             setIsPlaying(false);
             setCurrentTime(0);
-            audio.currentTime = 0;
+            if(audio) audio.currentTime = 0;
         };
         
         audio.addEventListener('loadedmetadata', handleLoadedMetadata);
@@ -47,7 +38,7 @@ export function AudioPlayer({ src, duration = 0, audioRef }: AudioPlayerProps) {
         
         if (duration > 0) {
             setActualDuration(duration);
-        } else if (audio.duration && audio.duration !== Infinity) {
+        } else if (audio.duration && isFinite(audio.duration)) {
             setActualDuration(audio.duration);
         }
         
@@ -56,17 +47,20 @@ export function AudioPlayer({ src, duration = 0, audioRef }: AudioPlayerProps) {
             audio.removeEventListener('timeupdate', handleTimeUpdate);
             audio.removeEventListener('ended', handlePlaybackEnd);
         };
-    }, [src, duration, audioRef]);
+    }, [src, duration]);
 
 
     const togglePlay = () => {
-        const audio = internalAudioRef.current;
+        const audio = audioRef.current;
         if (!audio) return;
 
         if (isPlaying) {
             audio.pause();
         } else {
-            audio.play().catch(e => console.error("Error playing audio:", e));
+            // Check if audio context is suspended, and resume it if necessary
+            if (audio.paused) {
+                 audio.play().catch(e => console.error("Error playing audio:", e));
+            }
         }
         setIsPlaying(!isPlaying);
     };
@@ -79,7 +73,7 @@ export function AudioPlayer({ src, duration = 0, audioRef }: AudioPlayerProps) {
     };
 
     const handleSeek = (value: number[]) => {
-        const audio = internalAudioRef.current;
+        const audio = audioRef.current;
         if (audio) {
             audio.currentTime = value[0];
             setCurrentTime(value[0]);
@@ -90,6 +84,7 @@ export function AudioPlayer({ src, duration = 0, audioRef }: AudioPlayerProps) {
 
     return (
         <div className="flex items-center gap-2 w-full">
+            <audio ref={audioRef} src={src} preload="metadata" />
             <button onClick={togglePlay} className="flex-shrink-0">
                 {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
             </button>

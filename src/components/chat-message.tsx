@@ -7,9 +7,14 @@ import { cn } from '@/lib/utils';
 import type { Message } from '@/lib/types';
 import { Button } from "./ui/button";
 import { TypingIndicator } from './typing-indicator';
-import { AudioPlayer } from "@/components/audio-player";
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { BeforeAfterImage } from './before-after-image';
+import dynamic from "next/dynamic";
+
+const AudioPlayer = dynamic(() => import('@/components/audio-player').then(mod => mod.AudioPlayer), {
+  ssr: false,
+  loading: () => <div className="h-10 w-full animate-pulse rounded-lg bg-gray-300 dark:bg-gray-600" />,
+});
 
 
 const MessageStatus = ({ status }: { status: Message['status'] }) => {
@@ -25,7 +30,7 @@ interface ChatMessageProps {
     getAudioRef: (id: string | number) => HTMLAudioElement | undefined;
 }
 
-export const ChatMessage = ({ message, onQuickReply, getAudioRef }: ChatMessageProps) => {
+export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
   const { id, sender, type, content, timestamp, imageSrc, audioSrc, audioDuration, status, options, beforeImageSrc, afterImageSrc } = message;
   const isUser = sender === 'user';
   
@@ -97,7 +102,7 @@ export const ChatMessage = ({ message, onQuickReply, getAudioRef }: ChatMessageP
                 </Avatar>
             )}
             <div className="flex-grow">
-              <AudioPlayer src={audioSrc} duration={audioDuration} audioRef={typeof id !== 'undefined' ? getAudioRef(id) : undefined} />
+              <AudioPlayer src={audioSrc} duration={audioDuration} />
               <TimeStamp isAudio={true} />
             </div>
           </div>
