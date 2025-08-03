@@ -83,7 +83,7 @@ export const chatFlow: ChatStep[] = [
     type: 'audio',
     audioSrc: 'https://jocular-hotteok-c97a2c.netlify.app/',
     audioDuration: 100, // 1 minuto e 40 segundos
-    delay: 2000, // 2 segundos após o relatório
+    delay: 5000, // 5 segundos após o relatório
     autoplay: true,
   },
 ];
