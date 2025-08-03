@@ -41,8 +41,10 @@ export default function ChatPage() {
 
   useEffect(() => {
     setIsClient(true);
-    audioSentRef.current = new Audio('/audio/sent.mp3');
-    audioReceivedRef.current = new Audio('/audio/received.mp3');
+    if (typeof window !== 'undefined') {
+        audioSentRef.current = new Audio('/audio/sent.mp3');
+        audioReceivedRef.current = new Audio('/audio/received.mp3');
+    }
   }, []);
 
   useEffect(() => {
@@ -339,7 +341,7 @@ export default function ChatPage() {
                     id: 'final-image-2',
                     sender: 'bot',
                     type: 'image',
-                    imageSrc: 'https://profound-croissant-0ea90b.netlify.app/imagem.gif',
+                    imageSrc: 'https://helpful-kringle-4454f2.netlify.app/imagem.gif',
                     content: 'Imagem 2',
                     timestamp: ''
                   }}
