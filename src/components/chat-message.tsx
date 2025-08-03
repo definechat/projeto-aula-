@@ -27,7 +27,6 @@ const MessageStatus = ({ status }: { status: Message['status'] }) => {
 interface ChatMessageProps {
     message: Message;
     onQuickReply: (option: { text: string; value: any }) => void;
-    getAudioRef: (id: string | number) => HTMLAudioElement | undefined;
 }
 
 export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
@@ -154,3 +153,5 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
     </div>
   );
 };
+
+    

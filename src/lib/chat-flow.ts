@@ -37,7 +37,7 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'text',
     content: "Prazer, {name}! Por último, me diz teu **whatsapp** pra enviar o checkup.",
-    delay: 7000,
+    delay: 2000,
     waitForUser: true,
   },
   {
@@ -150,7 +150,7 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'image',
     content: "Ivani, uma de nossas clientes felizes!",
-    imageSrc: '/images/ivani-antes-depois.jpg',
+    imageSrc: 'https://i.imgur.com/0JxjIbr.jpeg',
     delay: 4000,
   },
   {
@@ -255,3 +255,5 @@ export const chatFlow: ChatStep[] = [
     waitForUser: true
   }
 ];
+
+    

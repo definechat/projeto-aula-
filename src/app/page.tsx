@@ -271,11 +271,10 @@ export default function ChatPage() {
                 key={msg.id} 
                 message={msg} 
                 onQuickReply={(option) => handleQuickReply(option, `step_${chatFlow[currentStep].id}`)}
-                getAudioRef={getAudioRef}
               />
             ))}
             {isProcessing && !awaitingUserResponse && (
-              <ChatMessage message={{ id: 'typing', sender: 'bot', type: 'loading', timestamp: '' }} onQuickReply={() => { }} getAudioRef={getAudioRef} />
+              <ChatMessage message={{ id: 'typing', sender: 'bot', type: 'loading', timestamp: '' }} onQuickReply={() => { }} />
             )}
             {showIMCForm && <IMCForm onSubmit={handleIMCSubmit} />}
             {showReport && userInfo && (
@@ -350,3 +349,5 @@ export default function ChatPage() {
     </div>
   );
 }
+
+    
