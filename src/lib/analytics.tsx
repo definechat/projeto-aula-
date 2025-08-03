@@ -13,16 +13,24 @@ const AnalyticsContext = createContext<AnalyticsContextType | undefined>(undefin
 
 export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // This code now runs only on the client, after hydration
-    let currentUserId = localStorage.getItem('funnel_userId');
-    if (!currentUserId) {
-      currentUserId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      localStorage.setItem('funnel_userId', currentUserId);
-    }
-    setUserId(currentUserId);
+    // This effect runs only on the client, ensuring client-specific code
+    // does not cause a hydration mismatch.
+    setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (isClient) {
+      let currentUserId = localStorage.getItem('funnel_userId');
+      if (!currentUserId) {
+        currentUserId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('funnel_userId', currentUserId);
+      }
+      setUserId(currentUserId);
+    }
+  }, [isClient]);
 
   const trackEvent = async (stepId: string) => {
     if (!userId) return;
