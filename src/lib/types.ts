@@ -29,6 +29,7 @@ export interface Message {
   options?: { text: string; value: any }[];
   status?: 'sent' | 'delivered' | 'read';
   autoplay?: boolean;
+  playbackDelay?: number; // in ms
 }
 
 export interface UserInfo {

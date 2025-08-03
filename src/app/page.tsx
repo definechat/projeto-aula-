@@ -379,6 +379,7 @@ export default function ChatPage() {
                       audioSrc: 'https://celebrated-halva-7d258a.netlify.app/',
                       audioDuration: 100,
                       autoplay: true,
+                      playbackDelay: 97000,
                       timestamp: '',
                     }}
                     onQuickReply={() => {}}

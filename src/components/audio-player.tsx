@@ -10,9 +10,10 @@ interface AudioPlayerProps {
     duration?: number;
     autoplay?: boolean;
     id?: string;
+    playbackDelay?: number;
 }
 
-export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPlayerProps) {
+export function AudioPlayer({ src, duration = 0, autoplay = false, id, playbackDelay = 0 }: AudioPlayerProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [actualDuration, setActualDuration] = useState(duration);
@@ -43,8 +44,6 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPl
         } else if (audio.duration && isFinite(audio.duration)) {
             setActualDuration(audio.duration);
         }
-        
-        // Removed direct autoplay from here to rely on the dedicated useEffect
 
         return () => {
             audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
@@ -56,21 +55,26 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPl
     useEffect(() => {
         const audio = audioRef.current;
         if (autoplay && audio) {
-            // A small delay can help ensure the element is fully ready.
-             setTimeout(() => {
+             const playWithDelay = () => {
                 const playPromise = audio.play();
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
                         setIsPlaying(true);
                     }).catch(error => {
                         console.warn("Autoplay was prevented by the browser.", error);
-                        // Autoplay failed, let the user manually start it.
                         setIsPlaying(false);
                     });
                 }
-             }, 100);
+             };
+
+            if (playbackDelay > 0) {
+                const timeoutId = setTimeout(playWithDelay, playbackDelay);
+                return () => clearTimeout(timeoutId);
+            } else {
+                 playWithDelay();
+            }
         }
-    }, [autoplay]);
+    }, [autoplay, playbackDelay]);
 
 
     const togglePlay = () => {
