@@ -9,6 +9,7 @@ import type { Message } from '@/lib/types';
 import { Button } from "./ui/button";
 import { TypingIndicator } from './typing-indicator';
 import { AudioPlayer } from "@/components/audio-player";
+import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 
 const MessageStatus = ({ status }: { status: Message['status'] }) => {
   if (status === 'read') return <CheckCheck className="h-4 w-4 text-blue-500" />;
@@ -20,12 +21,23 @@ const MessageStatus = ({ status }: { status: Message['status'] }) => {
 interface ChatMessageProps {
     message: Message;
     onQuickReply: (option: { text: string; value: any }) => void;
+    getAudioRef: (id: string | number) => HTMLAudioElement | undefined;
 }
 
-export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
-  const { sender, type, content, timestamp, imageSrc, audioSrc, audioDuration, status, options } = message;
+export const ChatMessage = ({ message, onQuickReply, getAudioRef }: ChatMessageProps) => {
+  const { id, sender, type, content, timestamp, imageSrc, audioSrc, audioDuration, status, options } = message;
   const isUser = sender === 'user';
   
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (type === 'audio' && audioSrc) {
+        const audioElement = getAudioRef(id);
+        if (audioElement) {
+            audioRef.current = audioElement;
+        }
+    }
+  }, [id, type, audioSrc, getAudioRef]);
 
   const messageContainerClasses = cn(
     'flex w-full',
@@ -75,12 +87,17 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
         );
       
       case 'audio':
-        if (!audioSrc) return null;
+        if (!audioSrc || !audioRef) return null;
         return (
           <div className={cn('w-full flex items-center gap-2 text-sm p-2 rounded-lg', isUser ? 'bg-teal-500 text-white' : 'bg-gray-200 dark:bg-gray-700')}>
-            {!isUser && <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 flex-shrink-0"></div>}
+            {!isUser && (
+                 <Avatar className="h-10 w-10 flex-shrink-0">
+                    <AvatarImage src="https://i.imgur.com/zPbvfTZ.jpeg" alt="MiKE Avatar" />
+                    <AvatarFallback>M</AvatarFallback>
+                </Avatar>
+            )}
             <div className="flex-grow">
-              <AudioPlayer src={audioSrc} duration={audioDuration} />
+              <AudioPlayer audioRef={audioRef} src={audioSrc} duration={audioDuration} />
               <TimeStamp isAudio={true} />
             </div>
           </div>

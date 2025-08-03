@@ -32,6 +32,8 @@ export default function ChatPage() {
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const reportCardRef = useRef<HTMLDivElement>(null);
+  
+  const audioRefs = useRef<Record<string, HTMLAudioElement>>({});
 
   const audioSentRef = useRef<HTMLAudioElement | null>(null);
   const audioReceivedRef = useRef<HTMLAudioElement | null>(null);
@@ -212,7 +214,11 @@ export default function ChatPage() {
       if (step.audioDuration) messageToAdd.audioDuration = step.audioDuration;
       if (step.type === 'image' && step.imageSrc) messageToAdd.imageSrc = step.imageSrc;
       if (step.type === 'quick-reply' && step.options) messageToAdd.options = step.options;
-      if (step.audioSrc) messageToAdd.audioSrc = step.audioSrc;
+      if (step.audioSrc) {
+        messageToAdd.audioSrc = step.audioSrc;
+        const audio = new Audio(step.audioSrc);
+        audioRefs.current[step.id] = audio;
+      }
       
       addMessage(messageToAdd, stepId);
       
@@ -226,6 +232,10 @@ export default function ChatPage() {
     runStep();
   }, [currentStep, awaitingUserResponse, userInfo, leadInfo.name]);
 
+  const getAudioRef = (id: string | number) => {
+    return audioRefs.current[id];
+  }
+
   return (
     <div className="bg-background flex justify-center items-center min-h-screen p-0 md:p-4">
       <div className="w-full h-screen md:h-[90vh] md:max-w-md md:max-h-[850px] flex flex-col bg-white dark:bg-black md:rounded-2xl shadow-2xl overflow-hidden">
@@ -234,7 +244,7 @@ export default function ChatPage() {
             <ArrowLeft />
           </Button>
           <Avatar className="h-10 w-10 ml-2">
-            <AvatarImage src="https://placehold.co/100x100/25D366/FFFFFF.png?text=M" data-ai-hint="logo M" alt="MiKE" />
+            <AvatarImage src="https://i.imgur.com/zPbvfTZ.jpeg" data-ai-hint="logo M" alt="MiKE" />
             <AvatarFallback>M</AvatarFallback>
           </Avatar>
           <div className="ml-3 flex-grow">
@@ -251,10 +261,15 @@ export default function ChatPage() {
         <main ref={chatContainerRef} className="flex-grow p-4 overflow-y-auto chat-bg">
           <div className="flex flex-col gap-4">
             {messages.map((msg) => (
-              <ChatMessage key={msg.id} message={msg} onQuickReply={(option) => handleQuickReply(option, `step_${chatFlow[currentStep].id}`)} />
+              <ChatMessage 
+                key={msg.id} 
+                message={msg} 
+                onQuickReply={(option) => handleQuickReply(option, `step_${chatFlow[currentStep].id}`)}
+                getAudioRef={getAudioRef}
+              />
             ))}
             {isProcessing && !awaitingUserResponse && (
-              <ChatMessage message={{ id: 'typing', sender: 'bot', type: 'loading', timestamp: '' }} onQuickReply={() => { }} />
+              <ChatMessage message={{ id: 'typing', sender: 'bot', type: 'loading', timestamp: '' }} onQuickReply={() => { }} getAudioRef={getAudioRef} />
             )}
             {showIMCForm && <IMCForm onSubmit={handleIMCSubmit} />}
             {showReport && userInfo && (
