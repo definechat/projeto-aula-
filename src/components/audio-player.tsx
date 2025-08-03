@@ -40,7 +40,11 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id, hasIntera
         if (!audio) return;
         
         const handleLoadedMetadata = () => {
-             setActualDuration(duration > 0 ? duration : audio.duration);
+             if (duration > 0) {
+                setActualDuration(duration);
+             } else if (audio.duration && isFinite(audio.duration)) {
+                setActualDuration(audio.duration);
+             }
         };
 
         const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
@@ -54,11 +58,8 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id, hasIntera
         audio.addEventListener('timeupdate', handleTimeUpdate);
         audio.addEventListener('ended', handlePlaybackEnd);
         
-        if (duration > 0) {
-            setActualDuration(duration);
-        } else if (audio.duration && isFinite(audio.duration)) {
-            setActualDuration(audio.duration);
-        }
+        // Initial setup for duration
+        handleLoadedMetadata();
 
         if (autoplay && hasInteracted) {
            tryPlayAudio();
