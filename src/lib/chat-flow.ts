@@ -22,6 +22,14 @@ export const chatFlow: ChatStep[] = [
     type: 'text',
     content: "Receba o seu **gratuitamente!** 🎁\nMe diz teu nome.",
     delay: 7000,
+  },
+  {
+    id: 0.35,
+    sender: 'bot',
+    type: 'audio',
+    audioSrc: 'https://serene-cuchufli-59aba5.netlify.app/audio/nome-whatsapp.mp3',
+    audioDuration: 7,
+    delay: 2000,
     waitForUser: true,
   },
   {
