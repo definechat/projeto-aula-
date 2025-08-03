@@ -16,13 +16,6 @@ export const chatFlow: ChatStep[] = [
     content: "Você sabia que é **impossível emagrecer de vez** sem antes fazer um **check-up de emagrecimento?**",
     delay: 2000,
   },
-  {
-    id: 0.25,
-    sender: 'bot',
-    type: 'image',
-    imageSrc: 'https://i.imgur.com/2T1ofoS.gif',
-    delay: 2000,
-  },
    {
     id: 0.3,
     sender: 'bot',
