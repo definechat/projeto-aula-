@@ -35,6 +35,7 @@ export default function ChatPage() {
   const [showImage1, setShowImage1] = useState(false);
   const [showImage2, setShowImage2] = useState(false);
   const [showImage3, setShowImage3] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   const { trackEvent } = useAnalytics();
 
@@ -46,6 +47,7 @@ export default function ChatPage() {
   const audioReceivedRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    setIsClient(true);
     // We need to create audio elements in useEffect to ensure they exist on the client-side
     audioSentRef.current = new Audio('/audio/sent.mp3');
     audioReceivedRef.current = new Audio('/audio/received.mp3');
@@ -115,7 +117,7 @@ export default function ChatPage() {
     const newMessage: Message = {
       ...message,
       content: finalContent,
-      id: crypto.randomUUID(),
+      id: isClient ? crypto.randomUUID() : String(Math.random()),
       timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       status: 'read'
     };
@@ -275,6 +277,11 @@ export default function ChatPage() {
   const getAudioRef = (id: string | number) => {
     return audioRefs.current[id];
   }
+  
+  if (!isClient) {
+    return null; // Or a loading spinner
+  }
+
 
   return (
     <div className="bg-background flex justify-center items-center min-h-screen p-0 md:p-4">

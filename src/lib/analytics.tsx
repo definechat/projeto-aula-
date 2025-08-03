@@ -17,12 +17,14 @@ export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) =
 
   useEffect(() => {
     // This effect runs only on the client, so it's safe to use localStorage
-    let currentUserId = localStorage.getItem('funnel_userId');
-    if (!currentUserId) {
-      currentUserId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      localStorage.setItem('funnel_userId', currentUserId);
+    if (typeof window !== 'undefined') {
+      let currentUserId = localStorage.getItem('funnel_userId');
+      if (!currentUserId) {
+        currentUserId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('funnel_userId', currentUserId);
+      }
+      setUserId(currentUserId);
     }
-    setUserId(currentUserId);
   }, []); // Empty dependency array means this runs once on mount, on the client.
 
 
