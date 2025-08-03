@@ -20,7 +20,7 @@ export const chatFlow: ChatStep[] = [
     id: 0.25,
     sender: 'bot',
     type: 'image',
-    imageSrc: "https://helpful-kringle-4454f2.netlify.app/maria.gif",
+    imageSrc: "https://i.imgur.com/1YjR7GO.gif",
     delay: 2000,
   },
    {

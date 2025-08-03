@@ -42,7 +42,7 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
   const messageBubbleClasses = cn(
     'relative w-fit max-w-[85%] sm:max-w-[75%] rounded-xl px-3 py-1.5 shadow-sm flex flex-col',
     isUser ? 'bg-teal-500 text-white rounded-br-none' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none',
-    { 'p-1 bg-transparent dark:bg-transparent shadow-none': (type === 'image' || type === 'video') && initialImageSrc },
+    { 'p-1 bg-transparent dark:bg-transparent shadow-none w-full': (type === 'image' || type === 'video') && initialImageSrc },
     { 'p-2 bg-gray-200 dark:bg-gray-700': type === 'loading' },
     { 'bg-transparent dark:bg-transparent shadow-none w-full max-w-[85%] sm:max-w-[75%]': type === 'audio' || type === 'before-after' }
   );
@@ -82,7 +82,7 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
                     src={initialImageSrc} 
                     alt={content || 'Chat image'} 
                     className="rounded-lg object-cover w-full h-auto"
-                    style={{ maxWidth: '400px', display: 'block' }}
+                    style={{ display: 'block' }}
                     onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.onerror = null;
@@ -94,10 +94,12 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
                 <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
               </div>
             )}
-            <div className="absolute bottom-0 left-0 right-0 p-2 pt-6 bg-gradient-to-t from-black/60 to-transparent rounded-b-lg">
-                {content && <p className="text-sm my-1 text-white">{content}</p>}
-                <TimeStamp isMedia />
-            </div>
+            {content && (
+              <div className="absolute bottom-0 left-0 right-0 p-2 pt-6 bg-gradient-to-t from-black/60 to-transparent rounded-b-lg">
+                <p className="text-sm my-1 text-white">{content}</p>
+              </div>
+            )}
+            {!isUser && <TimeStamp isMedia />}
           </div>
         );
       
