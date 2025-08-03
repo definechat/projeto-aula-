@@ -341,7 +341,7 @@ export default function ChatPage() {
                     id: 'final-image-2',
                     sender: 'bot',
                     type: 'image',
-                    imageSrc: 'https://helpful-kringle-4454f2.netlify.app/imagem.gif',
+                    imageSrc: 'https://jovial-stroopwafel-4f5050.netlify.app/imagem.gif',
                     content: 'Imagem 2',
                     timestamp: ''
                   }}
@@ -354,7 +354,7 @@ export default function ChatPage() {
                     id: 'final-image-3',
                     sender: 'bot',
                     type: 'image',
-                    imageSrc: 'https://jovial-stroopwafel-4f5050.netlify.app/imagem.gif',
+                    imageSrc: 'https://helpful-kringle-4454f2.netlify.app/imagem.gif',
                     content: 'Imagem 3',
                     timestamp: ''
                   }}
