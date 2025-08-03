@@ -21,7 +21,7 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'image',
     content: '',
-    imageSrc: "https://i.imgur.com/1YjR7GO.gif",
+    imageSrc: "https://i.imgur.com/4Fr9DGu.gif",
     delay: 2000,
   },
    {
@@ -83,7 +83,7 @@ export const chatFlow: ChatStep[] = [
     type: 'audio',
     audioSrc: 'https://jocular-hotteok-c97a2c.netlify.app/',
     audioDuration: 100, // 1 minuto e 40 segundos
-    delay: 5000,
+    delay: 7000,
     autoplay: true,
   }
 ];
