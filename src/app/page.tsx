@@ -13,12 +13,7 @@ import { IMCForm } from '@/components/imc-form';
 import { ReportCard } from '@/components/report-card';
 import { useAnalytics } from '@/lib/analytics';
 import dynamic from 'next/dynamic';
-
-const AudioPlayer = dynamic(() => import('@/components/audio-player').then(mod => mod.AudioPlayer), {
-  ssr: false,
-  loading: () => <div className="h-10 w-full animate-pulse rounded-lg bg-gray-300 dark:bg-gray-600" />,
-});
-
+import { AudioPlayer } from '@/components/audio-player';
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -129,7 +124,7 @@ export default function ChatPage() {
         setTimeout(() => {
             const audioEl = document.getElementById(`audio-${newMessage.id}`) as HTMLAudioElement;
             if (audioEl) {
-                audioEl.play().catch(e => console.log("Autoplay was prevented.", e));
+                audioEl.play().catch(e => console.warn("Autoplay was prevented. Waiting for user interaction.", e));
             }
         }, 100);
     }

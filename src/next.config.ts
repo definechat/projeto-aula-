@@ -25,6 +25,18 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'ephemeral-kangaroo-523a27.netlify.app',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'graceful-valkyrie-a05732.netlify.app',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'jocular-hotteok-c97a2c.netlify.app',
         port: '',
         pathname: '/**',
