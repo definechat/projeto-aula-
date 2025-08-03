@@ -6,12 +6,12 @@ import { Play, Pause } from 'lucide-react';
 import { Slider } from './ui/slider';
 
 interface AudioPlayerProps {
-    src?: string;
+    src: string;
     duration?: number;
+    audioRef: RefObject<HTMLAudioElement | null>;
 }
 
-export function AudioPlayer({ src, duration = 0 }: AudioPlayerProps) {
-    const audioRef: RefObject<HTMLAudioElement> = useRef(null);
+export function AudioPlayer({ src, duration = 0, audioRef }: AudioPlayerProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
 
@@ -20,21 +20,53 @@ export function AudioPlayer({ src, duration = 0 }: AudioPlayerProps) {
         if (isPlaying) {
             audioRef.current.pause();
         } else {
+            // Ensure src is set before playing
+            if(audioRef.current.src !== src) {
+                audioRef.current.src = src;
+            }
             audioRef.current.play().catch(console.error);
         }
-        setIsPlaying(!isPlaying);
     };
+    
+    useEffect(() => {
+        const audio = audioRef.current;
+
+        const handlePlaying = () => setIsPlaying(true);
+        const handlePause = () => setIsPlaying(false);
+        const handleTimeUpdate = () => setCurrentTime(audio?.currentTime || 0);
+        const handlePlaybackEnd = () => {
+            setIsPlaying(false);
+            setCurrentTime(0);
+            if(audio) audio.currentTime = 0;
+        };
+        
+        if (audio) {
+            audio.addEventListener('play', handlePlaying);
+            audio.addEventListener('playing', handlePlaying);
+            audio.addEventListener('pause', handlePause);
+            audio.addEventListener('timeupdate', handleTimeUpdate);
+            audio.addEventListener('ended', handlePlaybackEnd);
+
+            // Set initial state
+            setIsPlaying(!audio.paused);
+            setCurrentTime(audio.currentTime);
+
+            // Clean up listeners
+            return () => {
+                audio.removeEventListener('play', handlePlaying);
+                audio.removeEventListener('playing', handlePlaying);
+                audio.removeEventListener('pause', handlePause);
+                audio.removeEventListener('timeupdate', handleTimeUpdate);
+                audio.removeEventListener('ended', handlePlaybackEnd);
+            };
+        }
+    }, [audioRef, src]);
+
 
     const formatTime = (timeInSeconds: number) => {
         const minutes = Math.floor(timeInSeconds / 60);
         const seconds = Math.floor(timeInSeconds % 60);
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    };
-
-    const handleTimeUpdate = () => {
-        if (audioRef.current) {
-            setCurrentTime(audioRef.current.currentTime);
-        }
     };
 
     const handleSeek = (value: number[]) => {
@@ -43,27 +75,6 @@ export function AudioPlayer({ src, duration = 0 }: AudioPlayerProps) {
             setCurrentTime(value[0]);
         }
     };
-
-    const handlePlaybackEnd = () => {
-        setIsPlaying(false);
-        setCurrentTime(0);
-        if (audioRef.current) {
-            audioRef.current.currentTime = 0;
-        }
-    };
-
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (audio) {
-            audio.addEventListener('timeupdate', handleTimeUpdate);
-            audio.addEventListener('ended', handlePlaybackEnd);
-
-            return () => {
-                audio.removeEventListener('timeupdate', handleTimeUpdate);
-                audio.removeEventListener('ended', handlePlaybackEnd);
-            };
-        }
-    }, []);
 
     const effectiveDuration = duration > 0 ? duration : (audioRef.current?.duration || 0);
 
@@ -82,7 +93,7 @@ export function AudioPlayer({ src, duration = 0 }: AudioPlayerProps) {
                 />
                 <span className="text-xs w-12 text-right">{formatTime(effectiveDuration - currentTime)}</span>
             </div>
-            {src && <audio ref={audioRef} src={src} preload="auto" />}
+            {/* Audio element is now managed by the parent component via audioRef */}
         </div>
     );
 }

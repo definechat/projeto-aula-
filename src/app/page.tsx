@@ -13,7 +13,6 @@ import { IMCForm } from '@/components/imc-form';
 import { ReportCard } from '@/components/report-card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import html2canvas from 'html2canvas';
-import { AudioPlayer } from '@/components/audio-player';
 import { useAnalytics } from '@/lib/analytics';
 
 export default function ChatPage() {
@@ -34,8 +33,15 @@ export default function ChatPage() {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const reportCardRef = useRef<HTMLDivElement>(null);
 
-  const audioSentRef = useRef<HTMLAudioElement>(null);
-  const audioReceivedRef = useRef<HTMLAudioElement>(null);
+  const audioSentRef = useRef<HTMLAudioElement | null>(null);
+  const audioReceivedRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // We need to create audio elements in useEffect to ensure they exist on the client-side
+    audioSentRef.current = new Audio('/audio/sent.mp3');
+    audioReceivedRef.current = new Audio('/audio/received.mp3');
+  }, []);
+
 
   const scrollToBottom = () => {
     chatContainerRef.current?.scrollTo({ top: chatContainerRef.current.scrollHeight, behavior: 'smooth' });
@@ -46,10 +52,10 @@ export default function ChatPage() {
   }, [messages, isProcessing, showIMCForm, showReport]);
 
   const addMessage = (message: Omit<Message, 'id' | 'timestamp' | 'status'>, stepId?: string) => {
-    if (message.sender === 'user') {
-      audioSentRef.current?.play().catch(console.error);
-    } else {
-      audioReceivedRef.current?.play().catch(console.error);
+    if (message.sender === 'user' && audioSentRef.current) {
+      audioSentRef.current.play().catch(console.error);
+    } else if (message.sender === 'bot' && audioReceivedRef.current) {
+      audioReceivedRef.current.play().catch(console.error);
     }
 
     if (stepId) {
@@ -89,7 +95,7 @@ export default function ChatPage() {
     const step = chatFlow[currentStep];
     addMessage({ sender: 'user', type: 'text', content: inputValue.trim() }, `step_${step.id}`);
     
-    if (step.id === 0.3) { // Capturing name
+    if (step.id === 0.35) { // Capturing name
         setLeadInfo(prev => ({ ...prev, name: inputValue.trim() }));
     } else if (step.id === 0.4) { // Capturing whatsapp
         setLeadInfo(prev => ({ ...prev, whatsapp: inputValue.trim() }));
@@ -319,9 +325,6 @@ export default function ChatPage() {
             </Button>
           </DialogContent>
         </Dialog>
-
-        <audio ref={audioSentRef} src="/audio/sent.mp3" preload="auto"></audio>
-        <audio ref={audioReceivedRef} src="/audio/received.mp3" preload="auto"></audio>
       </div>
     </div>
   );

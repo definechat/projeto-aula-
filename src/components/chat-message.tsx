@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useRef, useEffect } from 'react';
 import Image from "next/image";
 import { Check, CheckCheck, Clock, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -24,6 +25,25 @@ interface ChatMessageProps {
 export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
   const { sender, type, content, timestamp, imageSrc, audioSrc, audioDuration, status, options } = message;
   const isUser = sender === 'user';
+  
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (type === 'audio' && audioSrc) {
+        // Create an audio element instance for this message
+        audioRef.current = new Audio(audioSrc);
+        audioRef.current.preload = 'auto';
+    }
+    
+    // Cleanup on component unmount
+    return () => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current = null;
+        }
+    };
+  }, [type, audioSrc]);
+
 
   const messageContainerClasses = cn(
     'flex w-full',
@@ -73,11 +93,12 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
         );
       
       case 'audio':
+        if (!audioSrc) return null;
         return (
           <div className={cn('w-full flex items-center gap-2 text-sm p-2 rounded-lg', isUser ? 'bg-teal-500 text-white' : 'bg-gray-200 dark:bg-gray-700')}>
             {!isUser && <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 flex-shrink-0"></div>}
             <div className="flex-grow">
-              <AudioPlayer src={audioSrc} duration={audioDuration} />
+              <AudioPlayer src={audioSrc} duration={audioDuration} audioRef={audioRef} />
               <TimeStamp isAudio={true} />
             </div>
           </div>
