@@ -44,30 +44,31 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPl
             setActualDuration(audio.duration);
         }
         
-        if (autoplay) {
-            // Delay slightly to ensure DOM is ready
-            setTimeout(() => togglePlay(), 100);
-        }
+        // Removed direct autoplay from here to rely on the dedicated useEffect
 
         return () => {
             audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
             audio.removeEventListener('timeupdate', handleTimeUpdate);
             audio.removeEventListener('ended', handlePlaybackEnd);
         };
-    }, [src, duration]); // Removed autoplay from dependencies to avoid re-triggering
+    }, [src, duration]);
 
     useEffect(() => {
-        if (autoplay && audioRef.current && !isPlaying) {
-             const playPromise = audioRef.current.play();
-             if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    setIsPlaying(true);
-                }).catch(error => {
-                    console.warn("Autoplay was prevented by the browser.", error);
-                    // Autoplay failed, let the user manually start it.
-                    setIsPlaying(false);
-                });
-            }
+        const audio = audioRef.current;
+        if (autoplay && audio) {
+            // A small delay can help ensure the element is fully ready.
+             setTimeout(() => {
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        setIsPlaying(true);
+                    }).catch(error => {
+                        console.warn("Autoplay was prevented by the browser.", error);
+                        // Autoplay failed, let the user manually start it.
+                        setIsPlaying(false);
+                    });
+                }
+             }, 100);
         }
     }, [autoplay]);
 
