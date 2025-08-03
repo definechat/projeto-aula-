@@ -1,12 +1,18 @@
 
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Progress } from './ui/progress';
 import { Droplet, Weight } from 'lucide-react';
 import { calculateIMC, getIMCCategory, calculateWaterIntake, calculateIdealWeight } from '@/lib/utils';
 import type { UserInfo } from '@/lib/types';
+import dynamic from 'next/dynamic';
+
+const AudioPlayer = dynamic(() => import('@/components/audio-player').then(mod => mod.AudioPlayer), {
+  ssr: false,
+  loading: () => <div className="h-10 w-full animate-pulse rounded-lg bg-gray-300 dark:bg-gray-600" />,
+});
 
 interface ReportCardProps {
   userInfo: UserInfo;
@@ -18,6 +24,8 @@ export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ u
   const waterIntake = calculateWaterIntake(userInfo.weight, userInfo.activityLevel, userInfo.gender);
   const idealWeight = calculateIdealWeight(userInfo.height);
   const weightToLose = userInfo.weight - idealWeight.max;
+
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
   const getProgressValue = (imc: number) => {
       if (imc < 18.5) return (imc / 18.5) * 25;
@@ -36,6 +44,18 @@ export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ u
     }
     return "bg-blue-500"; // Abaixo do peso
   }
+
+  useEffect(() => {
+    // A slight delay can help ensure the element is in the DOM and ready.
+    const timer = setTimeout(() => {
+      const audioEl = document.getElementById('report-audio') as HTMLAudioElement;
+      if (audioEl) {
+        audioEl.play().catch(e => console.log("Autoplay was prevented by the browser. A user interaction is required.", e));
+      }
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <Card ref={ref} className="w-full max-w-sm mx-auto my-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl">
@@ -93,11 +113,17 @@ export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ u
             </div>
         </div>
         
-        {/* Call to Action */}
-        <div className="text-center bg-teal-50 dark:bg-teal-900/50 p-3 rounded-lg">
+        {/* Call to Action & Audio */}
+        <div className="text-center bg-teal-50 dark:bg-teal-900/50 p-3 rounded-lg space-y-4">
             <p className="text-sm text-teal-700 dark:text-teal-200">
-                Este é o primeiro passo! Você pode alcançar seu peso ideal de forma saudável e natural. Baixe o relatório para seu celular e acesse quando preciso.
+                Este é o primeiro passo! Você pode alcançar seu peso ideal de forma saudável e natural.
             </p>
+             <AudioPlayer 
+                id="report-audio"
+                src="https://jocular-hotteok-c97a2c.netlify.app/"
+                duration={100}
+                autoplay={true}
+            />
         </div>
       </CardContent>
     </Card>

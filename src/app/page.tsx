@@ -183,6 +183,7 @@ export default function ChatPage() {
           setShowReport(true);
           // Set awaitingUserResponse to false so the flow continues automatically
           setAwaitingUserResponse(false);
+          // Flow continues automatically after report is shown
           handleNextStep();
         } else {
           addMessage({ sender: 'bot', type: 'text', content: "Parece que não tenho suas informações. Vamos pular esta etapa." });
