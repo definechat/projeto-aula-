@@ -49,6 +49,15 @@ export const chatFlow: ChatStep[] = [
     waitForUser: true,
   },
   {
+    id: 0.6,
+    sender: 'bot',
+    type: 'audio',
+    audioSrc: 'https://gentle-tulumba-bd94c2.netlify.app/audio.mp3',
+    audioDuration: 20, // Assuming a duration, can be adjusted.
+    delay: 7000,
+    autoplay: true,
+  },
+  {
     id: 1,
     sender: 'bot',
     type: 'calculator',
@@ -263,5 +272,3 @@ export const chatFlow: ChatStep[] = [
     waitForUser: true
   }
 ];
-
-    
