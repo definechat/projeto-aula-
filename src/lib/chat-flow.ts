@@ -17,6 +17,13 @@ export const chatFlow: ChatStep[] = [
     delay: 2000,
   },
    {
+    id: 0.25,
+    sender: 'bot',
+    type: 'image',
+    imageSrc: "https://i.imgur.com/2T1ofoS.gif",
+    delay: 2000,
+  },
+   {
     id: 0.3,
     sender: 'bot',
     type: 'text',
