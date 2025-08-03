@@ -10,10 +10,9 @@ interface AudioPlayerProps {
     duration?: number;
     autoplay?: boolean;
     id?: string;
-    playbackDelay?: number;
 }
 
-export function AudioPlayer({ src, duration = 0, autoplay = false, id, playbackDelay = 0 }: AudioPlayerProps) {
+export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPlayerProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [actualDuration, setActualDuration] = useState(duration);
@@ -55,26 +54,17 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id, playbackD
     useEffect(() => {
         const audio = audioRef.current;
         if (autoplay && audio) {
-             const playWithDelay = () => {
-                const playPromise = audio.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        setIsPlaying(true);
-                    }).catch(error => {
-                        console.warn("Autoplay was prevented by the browser.", error);
-                        setIsPlaying(false);
-                    });
-                }
-             };
-
-            if (playbackDelay > 0) {
-                const timeoutId = setTimeout(playWithDelay, playbackDelay);
-                return () => clearTimeout(timeoutId);
-            } else {
-                 playWithDelay();
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    setIsPlaying(true);
+                }).catch(error => {
+                    console.warn("Autoplay was prevented by the browser.", error);
+                    setIsPlaying(false);
+                });
             }
         }
-    }, [autoplay, playbackDelay]);
+    }, [autoplay]);
 
 
     const togglePlay = () => {
