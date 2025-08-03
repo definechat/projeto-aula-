@@ -8,9 +8,11 @@ import { Slider } from './ui/slider';
 interface AudioPlayerProps {
     src: string;
     duration?: number;
+    autoplay?: boolean;
+    id?: string;
 }
 
-export function AudioPlayer({ src, duration = 0 }: AudioPlayerProps) {
+export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPlayerProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [actualDuration, setActualDuration] = useState(duration);
@@ -42,12 +44,16 @@ export function AudioPlayer({ src, duration = 0 }: AudioPlayerProps) {
             setActualDuration(audio.duration);
         }
         
+        if (autoplay) {
+            togglePlay();
+        }
+
         return () => {
             audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
             audio.removeEventListener('timeupdate', handleTimeUpdate);
             audio.removeEventListener('ended', handlePlaybackEnd);
         };
-    }, [src, duration]);
+    }, [src, duration, autoplay]);
 
 
     const togglePlay = () => {
@@ -57,10 +63,7 @@ export function AudioPlayer({ src, duration = 0 }: AudioPlayerProps) {
         if (isPlaying) {
             audio.pause();
         } else {
-            // Check if audio context is suspended, and resume it if necessary
-            if (audio.paused) {
-                 audio.play().catch(e => console.error("Error playing audio:", e));
-            }
+             audio.play().catch(e => console.error("Error playing audio:", e));
         }
         setIsPlaying(!isPlaying);
     };
@@ -84,7 +87,7 @@ export function AudioPlayer({ src, duration = 0 }: AudioPlayerProps) {
 
     return (
         <div className="flex items-center gap-2 w-full">
-            <audio ref={audioRef} src={src} preload="metadata" />
+            <audio ref={audioRef} src={src} preload="metadata" id={id}/>
             <button onClick={togglePlay} className="flex-shrink-0">
                 {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
             </button>

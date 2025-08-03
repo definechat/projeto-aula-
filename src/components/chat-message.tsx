@@ -30,7 +30,7 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
-  const { id, sender, type, content, timestamp, imageSrc, audioSrc, audioDuration, status, options, beforeImageSrc, afterImageSrc } = message;
+  const { id, sender, type, content, timestamp, imageSrc, audioSrc, audioDuration, status, options, beforeImageSrc, afterImageSrc, autoplay } = message;
   const isUser = sender === 'user';
   
   const messageContainerClasses = cn(
@@ -101,7 +101,7 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
                 </Avatar>
             )}
             <div className="flex-grow">
-              <AudioPlayer src={audioSrc} duration={audioDuration} />
+              <AudioPlayer src={audioSrc} duration={audioDuration} autoplay={autoplay} id={`audio-${id}`} />
               <TimeStamp isAudio={true} />
             </div>
           </div>

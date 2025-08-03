@@ -56,7 +56,7 @@ export default function ChatPage() {
   const addMessage = (message: Omit<Message, 'id' | 'timestamp' | 'status'>, stepId?: string) => {
     if (message.sender === 'user' && audioSentRef.current) {
       audioSentRef.current.play().catch(console.error);
-    } else if (message.sender === 'bot' && audioReceivedRef.current) {
+    } else if (message.sender === 'bot' && audioReceivedRef.current && message.type !== 'audio') {
       audioReceivedRef.current.play().catch(console.error);
     }
 
@@ -69,14 +69,25 @@ export default function ChatPage() {
         finalContent = message.content.replace('{name}', leadInfo.name.split(' ')[0] || '');
     }
 
-
-    setMessages(prev => [...prev, {
+    const newMessage: Message = {
       ...message,
       content: finalContent,
       id: crypto.randomUUID(),
       timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       status: 'read'
-    }]);
+    };
+
+    setMessages(prev => [...prev, newMessage]);
+
+    if(newMessage.type === 'audio' && newMessage.autoplay) {
+        // Attempt to play audio automatically after a short delay to allow rendering
+        setTimeout(() => {
+            const audioEl = document.getElementById(`audio-${newMessage.id}`) as HTMLAudioElement;
+            if (audioEl) {
+                audioEl.play().catch(e => console.log("Autoplay was prevented.", e));
+            }
+        }, 100);
+    }
   };
 
   const handleNextStep = (stepIncrement = 1) => {
@@ -224,6 +235,9 @@ export default function ChatPage() {
         messageToAdd.audioSrc = step.audioSrc;
         const audio = new Audio(step.audioSrc);
         audioRefs.current[step.id] = audio;
+      }
+      if (step.autoplay) {
+        messageToAdd.autoplay = step.autoplay;
       }
       
       addMessage(messageToAdd, stepId);

@@ -12,6 +12,7 @@ export interface ChatStep {
   waitForUser?: boolean;
   options?: { text: string; value: any }[];
   delay?: number; // in ms
+  autoplay?: boolean;
 }
 
 export interface Message {
@@ -27,6 +28,7 @@ export interface Message {
   timestamp: string;
   options?: { text: string; value: any }[];
   status?: 'sent' | 'delivered' | 'read';
+  autoplay?: boolean;
 }
 
 export interface UserInfo {
