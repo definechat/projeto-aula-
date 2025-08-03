@@ -28,7 +28,7 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'audio',
     audioSrc: 'https://ephemeral-kangaroo-523a27.netlify.app/audio-boas-vindas.mp3',
-    audioDuration: 7,
+    audioDuration: 29,
     delay: 1000,
     waitForUser: true,
   },

@@ -8,31 +8,28 @@ import { Slider } from './ui/slider';
 interface AudioPlayerProps {
     src: string;
     duration?: number;
-    audioRef: RefObject<HTMLAudioElement | null>;
 }
 
-export function AudioPlayer({ src, duration = 0, audioRef }: AudioPlayerProps) {
+export function AudioPlayer({ src, duration = 0 }: AudioPlayerProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
+    const [actualDuration, setActualDuration] = useState(duration);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    const togglePlay = () => {
-        if (!audioRef.current) return;
-        if (isPlaying) {
-            audioRef.current.pause();
-        } else {
-            // Ensure src is set before playing
-            if(audioRef.current.src !== src) {
-                audioRef.current.src = src;
-            }
-            audioRef.current.play().catch(console.error);
-        }
-    };
-    
     useEffect(() => {
+        // Create audio element only on client-side
+        audioRef.current = new Audio(src);
+        audioRef.current.preload = 'metadata';
+
         const audio = audioRef.current;
 
-        const handlePlaying = () => setIsPlaying(true);
-        const handlePause = () => setIsPlaying(false);
+        const handleLoadedMetadata = () => {
+            if (audio) {
+                // Use provided duration if it's > 0, otherwise use the audio's actual duration
+                setActualDuration(duration > 0 ? duration : audio.duration);
+            }
+        };
+
         const handleTimeUpdate = () => setCurrentTime(audio?.currentTime || 0);
         const handlePlaybackEnd = () => {
             setIsPlaying(false);
@@ -40,30 +37,34 @@ export function AudioPlayer({ src, duration = 0, audioRef }: AudioPlayerProps) {
             if(audio) audio.currentTime = 0;
         };
         
-        if (audio) {
-            audio.addEventListener('play', handlePlaying);
-            audio.addEventListener('playing', handlePlaying);
-            audio.addEventListener('pause', handlePause);
-            audio.addEventListener('timeupdate', handleTimeUpdate);
-            audio.addEventListener('ended', handlePlaybackEnd);
+        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.addEventListener('timeupdate', handleTimeUpdate);
+        audio.addEventListener('ended', handlePlaybackEnd);
+        
+        return () => {
+            audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+            audio.removeEventListener('timeupdate', handleTimeUpdate);
+            audio.removeEventListener('ended', handlePlaybackEnd);
+            audio.pause();
+            audioRef.current = null;
+        };
+    }, [src, duration]);
 
-            // Set initial state
-            setIsPlaying(!audio.paused);
-            setCurrentTime(audio.currentTime);
 
-            // Clean up listeners
-            return () => {
-                audio.removeEventListener('play', handlePlaying);
-                audio.removeEventListener('playing', handlePlaying);
-                audio.removeEventListener('pause', handlePause);
-                audio.removeEventListener('timeupdate', handleTimeUpdate);
-                audio.removeEventListener('ended', handlePlaybackEnd);
-            };
+    const togglePlay = () => {
+        if (!audioRef.current) return;
+        const audio = audioRef.current;
+
+        if (isPlaying) {
+            audio.pause();
+        } else {
+            audio.play().catch(e => console.error("Error playing audio:", e));
         }
-    }, [audioRef, src]);
-
+        setIsPlaying(!isPlaying);
+    };
 
     const formatTime = (timeInSeconds: number) => {
+        if (isNaN(timeInSeconds) || timeInSeconds < 0) return '0:00';
         const minutes = Math.floor(timeInSeconds / 60);
         const seconds = Math.floor(timeInSeconds % 60);
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
@@ -76,7 +77,7 @@ export function AudioPlayer({ src, duration = 0, audioRef }: AudioPlayerProps) {
         }
     };
 
-    const effectiveDuration = duration > 0 ? duration : (audioRef.current?.duration || 0);
+    const effectiveDuration = actualDuration || 0;
 
     return (
         <div className="flex items-center gap-2 w-full">
@@ -87,13 +88,12 @@ export function AudioPlayer({ src, duration = 0, audioRef }: AudioPlayerProps) {
                 <Slider
                     value={[currentTime]}
                     max={effectiveDuration}
-                    step={1}
+                    step={0.1}
                     onValueChange={handleSeek}
                     className="w-full"
                 />
-                <span className="text-xs w-12 text-right">{formatTime(effectiveDuration - currentTime)}</span>
+                <span className="text-xs w-12 text-right">{formatTime(effectiveDuration > currentTime ? effectiveDuration - currentTime : 0)}</span>
             </div>
-            {/* Audio element is now managed by the parent component via audioRef */}
         </div>
     );
 }
