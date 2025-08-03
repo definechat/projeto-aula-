@@ -10,17 +10,14 @@ interface AudioPlayerProps {
     duration?: number;
     autoplay?: boolean;
     id?: string;
-    playbackDelay?: number;
-    hasInteracted?: boolean;
 }
 
-export function AudioPlayer({ src, duration = 0, autoplay = false, id, playbackDelay = 0, hasInteracted = false }: AudioPlayerProps) {
+export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPlayerProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [actualDuration, setActualDuration] = useState(duration);
     
     const audioRef = useRef<HTMLAudioElement>(null);
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -47,50 +44,29 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id, playbackD
             setActualDuration(audio.duration);
         }
 
+        if (autoplay) {
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              setIsPlaying(true);
+            }).catch(error => {
+              console.warn("Autoplay was prevented by the browser.", error);
+              setIsPlaying(false);
+            });
+          }
+        }
+
         return () => {
             audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
             audio.removeEventListener('timeupdate', handleTimeUpdate);
             audio.removeEventListener('ended', handlePlaybackEnd);
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
         };
-    }, [src, duration]);
-
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (autoplay && audio) {
-            const playAudio = () => {
-                const playPromise = audio.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        setIsPlaying(true);
-                    }).catch(error => {
-                        console.warn("Autoplay was prevented by the browser.", error);
-                        setIsPlaying(false);
-                    });
-                }
-            };
-
-            if (playbackDelay > 0) {
-                if (hasInteracted) {
-                     timeoutRef.current = setTimeout(playAudio, playbackDelay);
-                }
-            } else {
-                 playAudio();
-            }
-        }
-    }, [autoplay, playbackDelay, hasInteracted]);
+    }, [src, duration, autoplay]);
 
 
     const togglePlay = () => {
         const audio = audioRef.current;
         if (!audio) return;
-
-        if (timeoutRef.current) {
-             clearTimeout(timeoutRef.current);
-             timeoutRef.current = null;
-        }
 
         if (isPlaying) {
             audio.pause();

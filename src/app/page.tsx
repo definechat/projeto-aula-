@@ -24,11 +24,6 @@ export default function ChatPage() {
   const [showReport, setShowReport] = useState(false);
   const [leadInfo, setLeadInfo] = useState({ name: '', whatsapp: '' });
   const [inputValue, setInputValue] = useState('');
-  const [showImage1, setShowImage1] = useState(false);
-  const [showImage2, setShowImage2] = useState(false);
-  const [showImage3, setShowImage3] = useState(false);
-  const [showFinalAudio, setShowFinalAudio] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   const { trackEvent } = useAnalytics();
@@ -45,62 +40,8 @@ export default function ChatPage() {
     if (typeof window !== 'undefined') {
         audioSentRef.current = new Audio('/audio/sent.mp3');
         audioReceivedRef.current = new Audio('/audio/received.mp3');
-
-        const handleInteraction = () => {
-            setHasInteracted(true);
-            document.removeEventListener('click', handleInteraction);
-            document.removeEventListener('scroll', handleInteraction);
-            document.removeEventListener('keydown', handleInteraction);
-        };
-
-        document.addEventListener('click', handleInteraction);
-        document.addEventListener('scroll', handleInteraction);
-        document.addEventListener('keydown', handleInteraction);
-
-        return () => {
-            document.removeEventListener('click', handleInteraction);
-            document.removeEventListener('scroll', handleInteraction);
-            document.removeEventListener('keydown', handleInteraction);
-        };
     }
   }, []);
-
-  useEffect(() => {
-    if (showReport) {
-      const timer = setTimeout(() => {
-        setShowImage1(true);
-      }, 7000);
-      return () => clearTimeout(timer);
-    }
-  }, [showReport]);
-
-  useEffect(() => {
-    if (showImage1) {
-      const timer = setTimeout(() => {
-        setShowImage2(true);
-      }, 7000);
-      return () => clearTimeout(timer);
-    }
-  }, [showImage1]);
-
-  useEffect(() => {
-    if (showImage2) {
-      const timer = setTimeout(() => {
-        setShowImage3(true);
-      }, 7000);
-      return () => clearTimeout(timer);
-    }
-  }, [showImage2]);
-
-  useEffect(() => {
-    if (showImage3) {
-      const timer = setTimeout(() => {
-          setShowFinalAudio(true);
-      }, 7000); // Show player after 7s
-      return () => clearTimeout(timer);
-    }
-  }, [showImage3]);
-
 
   const scrollToBottom = () => {
     chatContainerRef.current?.scrollTo({ top: chatContainerRef.current.scrollHeight, behavior: 'smooth' });
@@ -108,7 +49,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isProcessing, showIMCForm, showReport, showImage1, showImage2, showImage3, showFinalAudio]);
+  }, [messages, isProcessing, showIMCForm, showReport]);
 
   const addMessage = (message: Omit<Message, 'id' | 'timestamp' | 'status'>, stepId?: string) => {
     if (message.sender === 'user' && audioSentRef.current) {
@@ -262,7 +203,7 @@ export default function ChatPage() {
       if (step.audioSrc) {
         messageToAdd.audioSrc = step.audioSrc;
         const audio = new Audio(step.audioSrc);
-        audioRefs.current[step.id] = audio;
+        audioRefs.current[String(step.id)] = audio;
       }
       if (step.autoplay) {
         messageToAdd.autoplay = step.autoplay;
@@ -321,65 +262,6 @@ export default function ChatPage() {
             {showIMCForm && <IMCForm onSubmit={handleIMCSubmit} />}
             {showReport && userInfo && (
               <ReportCard userInfo={userInfo} />
-            )}
-             {showImage1 && (
-                <ChatMessage 
-                  message={{
-                    id: 'final-image-1',
-                    sender: 'bot',
-                    type: 'image',
-                    imageSrc: 'https://i.imgur.com/WGlJJYr.gif',
-                    content: 'Imagem 1',
-                    timestamp: ''
-                  }}
-                  onQuickReply={() => {}}
-                />
-            )}
-            {showImage2 && (
-               <ChatMessage 
-                  message={{
-                    id: 'final-image-2',
-                    sender: 'bot',
-                    type: 'image',
-                    imageSrc: 'https://i.imgur.com/sHEZcAB.gif',
-                    content: 'Imagem 2',
-                    timestamp: ''
-                  }}
-                  onQuickReply={() => {}}
-                />
-            )}
-            {showImage3 && (
-               <ChatMessage 
-                  message={{
-                    id: 'final-image-3',
-                    sender: 'bot',
-                    type: 'image',
-                    imageSrc: 'https://i.imgur.com/oxv0OYJ.gif',
-                    content: 'Imagem 3',
-                    timestamp: ''
-                  }}
-                  onQuickReply={() => {}}
-                />
-            )}
-            {showFinalAudio && (
-               <div className="flex w-full justify-start">
-                  <div className="relative w-fit max-w-[85%] sm:max-w-[75%] rounded-xl shadow-sm flex flex-col bg-transparent dark:bg-transparent w-full">
-                     <ChatMessage 
-                        message={{
-                          id: 'final-audio',
-                          sender: 'bot',
-                          type: 'audio',
-                          audioSrc: 'https://celebrated-halva-7d258a.netlify.app/',
-                          audioDuration: 100,
-                          autoplay: true,
-                          timestamp: '',
-                          playbackDelay: 97000,
-                          hasInteracted: hasInteracted,
-                        }}
-                        onQuickReply={() => {}}
-                      />
-                  </div>
-              </div>
             )}
           </div>
         </main>
