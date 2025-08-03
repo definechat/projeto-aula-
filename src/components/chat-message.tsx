@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { Check, CheckCheck, Clock, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -30,8 +31,15 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
-  const { id, sender, type, content, timestamp, imageSrc, audioSrc, audioDuration, status, options, beforeImageSrc, afterImageSrc, autoplay } = message;
+  const { id, sender, type, content, timestamp, imageSrc: initialImageSrc, audioSrc, audioDuration, status, options, beforeImageSrc, afterImageSrc, autoplay } = message;
   const isUser = sender === 'user';
+
+  const [imageSrc, setImageSrc] = useState(initialImageSrc);
+  
+  const handleImageError = () => {
+    // Fallback to a placeholder image if the original image fails to load
+    setImageSrc('https://placehold.co/400x400.png');
+  };
   
   const messageContainerClasses = cn(
     'flex w-full',
@@ -77,7 +85,15 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
         return (
           <div className="relative">
             {imageSrc ? (
-              <Image src={imageSrc} alt={content || 'Chat image'} width={400} height={400} className="rounded-lg object-cover" data-ai-hint="happy woman" />
+              <Image 
+                src={imageSrc} 
+                alt={content || 'Chat image'} 
+                width={400} 
+                height={400} 
+                className="rounded-lg object-cover" 
+                data-ai-hint="happy woman"
+                onError={handleImageError}
+              />
             ) : (
               <div className="w-[300px] h-[300px] bg-gray-200 dark:bg-gray-800 rounded-lg flex items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
@@ -153,5 +169,3 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
     </div>
   );
 };
-
-    
