@@ -2,11 +2,13 @@
 "use client";
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from './ui/card';
 import { Progress } from './ui/progress';
-import { Droplet, Weight } from 'lucide-react';
+import { Droplet, Weight, Download } from 'lucide-react';
 import { calculateIMC, getIMCCategory, calculateWaterIntake, calculateIdealWeight } from '@/lib/utils';
 import type { UserInfo } from '@/lib/types';
+import { Button } from './ui/button';
+import html2canvas from 'html2canvas';
 
 interface ReportCardProps {
   userInfo: UserInfo;
@@ -18,6 +20,24 @@ export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ u
   const waterIntake = calculateWaterIntake(userInfo.weight, userInfo.activityLevel, userInfo.gender);
   const idealWeight = calculateIdealWeight(userInfo.height);
   const weightToLose = userInfo.weight - idealWeight.max;
+  const cardRef = React.useRef<HTMLDivElement>(null);
+
+
+  const handleDownload = () => {
+    if (cardRef.current) {
+      html2canvas(cardRef.current, { 
+          useCORS: true,
+          backgroundColor: null, // Use a transparent background
+          scale: 2 // Increase resolution
+      }).then((canvas) => {
+        const link = document.createElement('a');
+        link.download = 'meu-relatorio-de-saude.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+  };
+
 
   const getProgressValue = (imc: number) => {
       if (imc < 18.5) return (imc / 18.5) * 25;
@@ -38,7 +58,7 @@ export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ u
   }
 
   return (
-    <Card ref={ref} className="w-full max-w-sm mx-auto my-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl">
+    <Card ref={cardRef} className="w-full max-w-sm mx-auto my-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl">
       <CardHeader className="text-center pb-2">
         <CardTitle className="text-2xl font-bold text-gray-800 dark:text-white">Seu Relatório de Saúde</CardTitle>
         <CardDescription>Uma análise inicial da sua jornada.</CardDescription>
@@ -100,6 +120,13 @@ export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ u
             </p>
         </div>
       </CardContent>
+      <CardFooter className="flex-col gap-2 pt-4">
+        <p className="text-sm text-gray-600 dark:text-gray-400">Este é o seu Relatório de Saúde.</p>
+        <Button onClick={handleDownload} className="w-full bg-teal-500 hover:bg-teal-600">
+          <Download className="mr-2 h-4 w-4" />
+          Baixar Relatório
+        </Button>
+      </CardFooter>
     </Card>
   );
 });
