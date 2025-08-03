@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef, type FormEvent } from 'react';
-import { ArrowLeft, Phone, Video as VideoIcon, MoreVertical, Send, Smile, Paperclip, Download, User, Weight, Ruler } from 'lucide-react';
+import { ArrowLeft, Phone, Video as VideoIcon, MoreVertical, Send, Smile, Paperclip } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,8 +11,6 @@ import type { Message, UserInfo } from '@/lib/types';
 import { ChatMessage } from '@/components/chat-message';
 import { IMCForm } from '@/components/imc-form';
 import { ReportCard } from '@/components/report-card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import html2canvas from 'html2canvas';
 import { useAnalytics } from '@/lib/analytics';
 
 export default function ChatPage() {
@@ -24,14 +22,12 @@ export default function ChatPage() {
   const [showIMCForm, setShowIMCForm] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [showReport, setShowReport] = useState(false);
-  const [showLeadModal, setShowLeadModal] = useState(false);
   const [leadInfo, setLeadInfo] = useState({ name: '', whatsapp: '' });
   const [inputValue, setInputValue] = useState('');
 
   const { trackEvent } = useAnalytics();
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const reportCardRef = useRef<HTMLDivElement>(null);
   
   const audioRefs = useRef<Record<string, HTMLAudioElement>>({});
 
@@ -132,24 +128,6 @@ export default function ChatPage() {
     handleNextStep();
   };
   
-  const handleDownloadReport = async () => {
-    if (!reportCardRef.current) return;
-    
-    try {
-        const canvas = await html2canvas(reportCardRef.current, { scale: 2 });
-        const link = document.createElement('a');
-        link.href = canvas.toDataURL('image/jpeg', 0.9);
-        link.download = `relatorio-graokiseca-${leadInfo.name.split(' ')[0].toLowerCase()}.jpg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        setShowLeadModal(false);
-        // Do not advance the flow here anymore. The flow continues automatically.
-    } catch (error) {
-        console.error("Erro ao gerar a imagem do relatório:", error);
-    }
-  };
-
 
   useEffect(() => {
     const step = currentStep < chatFlow.length ? chatFlow[currentStep] : null;
@@ -287,15 +265,7 @@ export default function ChatPage() {
             )}
             {showIMCForm && <IMCForm onSubmit={handleIMCSubmit} />}
             {showReport && userInfo && (
-              <>
-                <ReportCard ref={reportCardRef} userInfo={userInfo} />
-                <div className="flex justify-center my-2">
-                  <Button onClick={() => setShowLeadModal(true)} size="lg" className="bg-green-500 hover:bg-green-600 text-white font-bold shadow-lg animate-pulse">
-                    <Download className="mr-2 h-5 w-5" />
-                    Baixar Relatório
-                  </Button>
-                </div>
-              </>
+              <ReportCard userInfo={userInfo} />
             )}
           </div>
         </main>
@@ -318,42 +288,6 @@ export default function ChatPage() {
           </form>
         </footer>
 
-        <Dialog open={showLeadModal} onOpenChange={setShowLeadModal}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Quase lá! Baixe seu check-up gratuito.</DialogTitle>
-              <DialogDescription>
-                Por favor, preencha seus dados para receber seu check-up. Ele será seu guia inicial nesta jornada de transformação!
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <User className="h-5 w-5 text-gray-500" />
-                    <Input
-                        id="name"
-                        placeholder="Seu primeiro nome"
-                        value={leadInfo.name}
-                        onChange={(e) => setLeadInfo({ ...leadInfo, name: e.target.value })}
-                        className="col-span-3"
-                    />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                    <Input
-                        id="whatsapp"
-                        placeholder="Seu WhatsApp com DDD"
-                        value={leadInfo.whatsapp}
-                        onChange={(e) => setLeadInfo({ ...leadInfo, whatsapp: e.target.value })}
-                        className="col-span-3"
-                    />
-                </div>
-            </div>
-             <Button onClick={handleDownloadReport} disabled={!leadInfo.name || !leadInfo.whatsapp}>
-                <Download className="mr-2 h-4 w-4" />
-                Baixar
-            </Button>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );
