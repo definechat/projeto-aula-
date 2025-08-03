@@ -82,7 +82,7 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'audio',
     audioSrc: 'https://jocular-hotteok-c97a2c.netlify.app/audio-boas-vindas.mp3',
-    audioDuration: 29,
+    audioDuration: 100,
     delay: 2000,
     autoplay: true,
   },
@@ -289,5 +289,3 @@ export const chatFlow: ChatStep[] = [
     waitForUser: true
   }
 ];
-
-    
