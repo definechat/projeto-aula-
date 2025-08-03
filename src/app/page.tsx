@@ -336,7 +336,7 @@ export default function ChatPage() {
               <div className="flex w-full justify-start">
                 <div className="w-full max-w-[85%] sm:max-w-[75%]">
                   <img
-                    src="https://steady-caramel-e0d360.netlify.app/maria.gif"
+                    src="https://steady-caramel-e0d360.netlify.app/imagem.gif"
                     alt="Imagem 1"
                     className="w-full h-auto rounded-lg shadow-md"
                   />
@@ -347,7 +347,7 @@ export default function ChatPage() {
               <div className="flex w-full justify-start">
                  <div className="w-full max-w-[85%] sm:max-w-[75%]">
                   <img
-                    src="https://profound-croissant-0ea90b.netlify.app/maria.gif"
+                    src="https://profound-croissant-0ea90b.netlify.app/imagem.gif"
                     alt="Imagem 2"
                     className="w-full h-auto rounded-lg shadow-md"
                   />
@@ -358,7 +358,7 @@ export default function ChatPage() {
               <div className="flex w-full justify-start">
                  <div className="w-full max-w-[85%] sm:max-w-[75%]">
                   <img
-                    src="https://jovial-stroopwafel-4f5050.netlify.app/maria.gif"
+                    src="https://jovial-stroopwafel-4f5050.netlify.app/imagem.gif"
                     alt="Imagem 3"
                     className="w-full h-auto rounded-lg shadow-md"
                   />
