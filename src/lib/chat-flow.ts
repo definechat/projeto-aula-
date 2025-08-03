@@ -98,13 +98,4 @@ export const chatFlow: ChatStep[] = [
     imageSrc: 'https://i.imgur.com/oxv0OYJ.gif',
     delay: 7000,
   },
-  {
-    id: 6,
-    sender: 'bot',
-    type: 'audio',
-    audioSrc: 'https://celebrated-halva-7d258a.netlify.app/',
-    audioDuration: 100,
-    autoplay: true,
-    delay: 7000,
-  },
 ];
