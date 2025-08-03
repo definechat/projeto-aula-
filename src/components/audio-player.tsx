@@ -45,7 +45,8 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPl
         }
         
         if (autoplay) {
-            togglePlay();
+            // Delay slightly to ensure DOM is ready
+            setTimeout(() => togglePlay(), 100);
         }
 
         return () => {
@@ -53,7 +54,22 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPl
             audio.removeEventListener('timeupdate', handleTimeUpdate);
             audio.removeEventListener('ended', handlePlaybackEnd);
         };
-    }, [src, duration, autoplay]);
+    }, [src, duration]); // Removed autoplay from dependencies to avoid re-triggering
+
+    useEffect(() => {
+        if (autoplay && audioRef.current && !isPlaying) {
+             const playPromise = audioRef.current.play();
+             if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    setIsPlaying(true);
+                }).catch(error => {
+                    console.warn("Autoplay was prevented by the browser.", error);
+                    // Autoplay failed, let the user manually start it.
+                    setIsPlaying(false);
+                });
+            }
+        }
+    }, [autoplay]);
 
 
     const togglePlay = () => {
@@ -62,10 +78,18 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPl
 
         if (isPlaying) {
             audio.pause();
+            setIsPlaying(false);
         } else {
-             audio.play().catch(e => console.error("Error playing audio:", e));
+             const playPromise = audio.play();
+             if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    setIsPlaying(true);
+                }).catch(e => {
+                    console.error("Error playing audio:", e)
+                    setIsPlaying(false);
+                });
+            }
         }
-        setIsPlaying(!isPlaying);
     };
 
     const formatTime = (timeInSeconds: number) => {
@@ -87,7 +111,7 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPl
 
     return (
         <div className="flex items-center gap-2 w-full">
-            <audio ref={audioRef} src={src} preload="metadata" id={id}/>
+            <audio ref={audioRef} src={src} preload="auto" id={id} playsInline />
             <button onClick={togglePlay} className="flex-shrink-0">
                 {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
             </button>
