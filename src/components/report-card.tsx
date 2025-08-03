@@ -136,7 +136,7 @@ export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ u
          <div className="w-full mt-4 p-2 rounded-lg bg-gray-200 dark:bg-gray-700">
             <AudioPlayer 
                 id="report-audio"
-                src="https://celebrated-halva-7d258a.netlify.app/"
+                src="https://enchanting-pithivier-62b278.netlify.app/"
                 autoplay={true}
                 hasInteracted={hasInteracted}
             />

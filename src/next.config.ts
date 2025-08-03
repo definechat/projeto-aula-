@@ -70,6 +70,12 @@ const nextConfig: NextConfig = {
         hostname: 'celebrated-halva-7d258a.netlify.app',
         port: '',
         pathname: '/**',
+      },
+       {
+        protocol: 'https',
+        hostname: 'enchanting-pithivier-62b278.netlify.app',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
