@@ -2,7 +2,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { Check, CheckCheck, Clock, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Message } from '@/lib/types';
@@ -78,11 +77,9 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
         return (
           <div className="relative">
             {initialImageSrc ? (
-                <Image
+                 <img
                     src={initialImageSrc}
                     alt={content || 'Chat image'}
-                    width={400}
-                    height={400}
                     className="rounded-lg object-cover w-full h-auto"
                     style={{ display: 'block' }}
                     onError={(e) => {
