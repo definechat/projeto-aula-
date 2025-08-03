@@ -1,7 +1,6 @@
 
 "use client";
 
-import { useRef, useEffect } from 'react';
 import Image from "next/image";
 import { Check, CheckCheck, Clock, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -30,17 +29,6 @@ export const ChatMessage = ({ message, onQuickReply, getAudioRef }: ChatMessageP
   const { id, sender, type, content, timestamp, imageSrc, audioSrc, audioDuration, status, options, beforeImageSrc, afterImageSrc } = message;
   const isUser = sender === 'user';
   
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    if (type === 'audio' && audioSrc && typeof id !== 'undefined') {
-        const audioElement = getAudioRef(id);
-        if (audioElement) {
-            audioRef.current = audioElement;
-        }
-    }
-  }, [id, type, audioSrc, getAudioRef]);
-
   const messageContainerClasses = cn(
     'flex w-full',
     isUser ? 'justify-end' : 'justify-start'
@@ -109,7 +97,7 @@ export const ChatMessage = ({ message, onQuickReply, getAudioRef }: ChatMessageP
                 </Avatar>
             )}
             <div className="flex-grow">
-              <AudioPlayer src={audioSrc} duration={audioDuration} />
+              <AudioPlayer src={audioSrc} duration={audioDuration} audioRef={typeof id !== 'undefined' ? getAudioRef(id) : undefined} />
               <TimeStamp isAudio={true} />
             </div>
           </div>
