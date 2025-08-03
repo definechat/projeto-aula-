@@ -21,7 +21,15 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'text',
     content: "Receba o seu **gratuitamente!** 🎁\nMe diz teu nome.",
-    delay: 7000,
+    delay: 2000,
+  },
+  {
+    id: 0.35,
+    sender: 'bot',
+    type: 'audio',
+    audioSrc: 'https://ephemeral-kangaroo-523a27.netlify.app/audio-boas-vindas.mp3',
+    audioDuration: 7,
+    delay: 1000,
     waitForUser: true,
   },
   {
