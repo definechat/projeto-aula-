@@ -29,7 +29,6 @@ export default function ChatPage() {
   const [showIMCForm, setShowIMCForm] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [showReport, setShowReport] = useState(false);
-  const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [leadInfo, setLeadInfo] = useState({ name: '', whatsapp: '' });
   const [inputValue, setInputValue] = useState('');
 
@@ -55,7 +54,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isProcessing, showIMCForm, showReport, showAudioPlayer]);
+  }, [messages, isProcessing, showIMCForm, showReport]);
 
   const addMessage = (message: Omit<Message, 'id' | 'timestamp' | 'status'>, stepId?: string) => {
     if (message.sender === 'user' && audioSentRef.current) {
@@ -135,15 +134,6 @@ export default function ChatPage() {
     addMessage({ sender: 'user', type: 'text', content: `Pronto! Meus dados: ${data.weight}kg e ${data.height}cm.` }, step.id ? `step_${step.id}` : undefined);
     handleNextStep();
   };
-
-  useEffect(() => {
-      if (showReport) {
-          const timer = setTimeout(() => {
-              setShowAudioPlayer(true);
-          }, 7000);
-          return () => clearTimeout(timer);
-      }
-  }, [showReport]);
   
 
   useEffect(() => {
@@ -283,14 +273,6 @@ export default function ChatPage() {
             {showIMCForm && <IMCForm onSubmit={handleIMCSubmit} />}
             {showReport && userInfo && (
               <ReportCard userInfo={userInfo} />
-            )}
-             {showAudioPlayer && (
-              <div className="w-full max-w-sm mx-auto my-4">
-                <AudioPlayer 
-                  src="https://jocular-hotteok-c97a2c.netlify.app/audio.mp3"
-                  autoplay={true}
-                />
-              </div>
             )}
           </div>
         </main>
