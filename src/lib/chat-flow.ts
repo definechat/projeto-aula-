@@ -21,7 +21,7 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'image',
     content: '',
-    imageSrc: "https://helpful-kringle-4454f2.netlify.app/maria.gif",
+    imageSrc: "https://i.imgur.com/4Fr9DGu.gif",
     delay: 2000,
   },
    {
@@ -117,21 +117,6 @@ export const chatFlow: ChatStep[] = [
     delay: 6000,
     audioSrc: '/audio/planta-milenar.mp3',
     audioDuration: 30,
-  },
-  {
-    id: 6,
-    sender: 'bot',
-    type: 'quick-reply',
-    content: "Enfim minha linda... antes de ir ao que interessa me chamo **MiKE**, tá! E preciso saber quantos **Kg** você ficaria feliz de emagrecer e qual parte do corpo te **incomoda mais**?",
-    audioSrc: '/audio/quantos-kg.mp3',
-    audioDuration: 11,
-    delay: 5000,
-    waitForUser: true,
-    options: [
-        { text: "10kg - Barriga", value: '10_barriga' },
-        { text: "15kg - Corpo todo", value: '15_corpo' },
-        { text: "20kg+ - Me incomoda tudo", value: '20_tudo' }
-    ]
   },
   {
     id: 7,
