@@ -77,13 +77,4 @@ export const chatFlow: ChatStep[] = [
     type: 'report',
     delay: 2000,
   },
-  {
-    id: 2.5,
-    sender: 'bot',
-    type: 'audio',
-    audioSrc: 'https://enchanting-pithivier-62b278.netlify.app/',
-    audioDuration: 62,
-    delay: 5000,
-    autoplay: true,
-  },
 ];
