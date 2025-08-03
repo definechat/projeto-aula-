@@ -295,7 +295,7 @@ export default function ChatPage() {
               <>
                 <ReportCard ref={reportCardRef} userInfo={userInfo} />
                 <div className="flex justify-center my-2">
-                  <Button onClick={() => setShowLeadModal(true)} size="lg" className="bg-green-500 hover:bg-green-600 text-white font-bold shadow-lg">
+                  <Button onClick={() => setShowLeadModal(true)} size="lg" className="bg-green-500 hover:bg-green-600 text-white font-bold shadow-lg animate-pulse">
                     <Download className="mr-2 h-5 w-5" />
                     Baixar Relatório e Continuar
                   </Button>
@@ -363,5 +363,3 @@ export default function ChatPage() {
     </div>
   );
 }
-
-    
