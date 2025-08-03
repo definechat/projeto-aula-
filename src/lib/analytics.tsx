@@ -15,7 +15,7 @@ export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) =
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Generate or retrieve a unique user ID from localStorage
+    // This code now runs only on the client, after hydration
     let currentUserId = localStorage.getItem('funnel_userId');
     if (!currentUserId) {
       currentUserId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
