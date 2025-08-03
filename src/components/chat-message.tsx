@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Check, CheckCheck, Clock, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Message } from '@/lib/types';
@@ -75,13 +76,12 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
       case 'image':
       case 'video':
         return (
-          <div className="relative">
+          <div className="relative w-full aspect-[9/16] rounded-lg overflow-hidden">
             {initialImageSrc ? (
                  <img
                     src={initialImageSrc}
                     alt={content || 'Chat image'}
-                    className="rounded-lg object-cover w-full h-auto"
-                    style={{ display: 'block' }}
+                    className="w-full h-full object-cover"
                     onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.onerror = null;
@@ -89,7 +89,7 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
                     }}
                 />
             ) : (
-              <div className="w-[300px] h-[300px] bg-gray-200 dark:bg-gray-800 rounded-lg flex items-center justify-center">
+              <div className="w-full h-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
               </div>
             )}

@@ -328,7 +328,7 @@ export default function ChatPage() {
                     id: 'final-image-1',
                     sender: 'bot',
                     type: 'image',
-                    imageSrc: 'https://steady-caramel-e0d360.netlify.app/imagem.gif',
+                    imageSrc: 'https://i.imgur.com/WGlJJYr.gif',
                     content: 'Imagem 1',
                     timestamp: ''
                   }}
@@ -341,7 +341,7 @@ export default function ChatPage() {
                     id: 'final-image-2',
                     sender: 'bot',
                     type: 'image',
-                    imageSrc: 'https://jovial-stroopwafel-4f5050.netlify.app/imagem.gif',
+                    imageSrc: 'https://i.imgur.com/sHEZcAB.gif',
                     content: 'Imagem 2',
                     timestamp: ''
                   }}
@@ -354,7 +354,7 @@ export default function ChatPage() {
                     id: 'final-image-3',
                     sender: 'bot',
                     type: 'image',
-                    imageSrc: 'https://helpful-kringle-4454f2.netlify.app/imagem.gif',
+                    imageSrc: 'https://i.imgur.com/oxv0OYJ.gif',
                     content: 'Imagem 3',
                     timestamp: ''
                   }}

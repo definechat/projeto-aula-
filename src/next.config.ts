@@ -54,8 +54,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'https'
-        ,
+        protocol: 'https',
         hostname: 'jovial-stroopwafel-4f5050.netlify.app',
         port: '',
         pathname: '/**',
