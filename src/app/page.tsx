@@ -12,8 +12,6 @@ import { ChatMessage } from '@/components/chat-message';
 import { IMCForm } from '@/components/imc-form';
 import { ReportCard } from '@/components/report-card';
 import { useAnalytics } from '@/lib/analytics';
-import dynamic from 'next/dynamic';
-import { AudioPlayer } from '@/components/audio-player';
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -43,7 +41,6 @@ export default function ChatPage() {
 
   useEffect(() => {
     setIsClient(true);
-    // We need to create audio elements in useEffect to ensure they exist on the client-side
     audioSentRef.current = new Audio('/audio/sent.mp3');
     audioReceivedRef.current = new Audio('/audio/received.mp3');
   }, []);
@@ -120,7 +117,6 @@ export default function ChatPage() {
     setMessages(prev => [...prev, newMessage]);
 
     if(newMessage.type === 'audio' && newMessage.autoplay) {
-        // Attempt to play audio automatically after a short delay to allow rendering
         setTimeout(() => {
             const audioEl = document.getElementById(`audio-${newMessage.id}`) as HTMLAudioElement;
             if (audioEl) {
@@ -148,20 +144,18 @@ export default function ChatPage() {
     const step = chatFlow[currentStep];
     addMessage({ sender: 'user', type: 'text', content: inputValue.trim() }, `step_${step.id}`);
     
-    if (step.id === 0.4) { // Capturing name
+    if (step.id === 0.4) {
         setLeadInfo(prev => ({ ...prev, name: inputValue.trim() }));
         setAwaitingUserResponse(false);
         handleNextStep();
-    } else if (step.id === 0.5) { // Capturing whatsapp
+    } else if (step.id === 0.5) {
         setLeadInfo(prev => ({ ...prev, whatsapp: inputValue.trim() }));
         setAwaitingUserResponse(false);
         handleNextStep();
     }
 
-
     setInputValue('');
   };
-
 
   const handleIMCSubmit = (data: UserInfo) => {
     const step = chatFlow[currentStep];
@@ -172,7 +166,6 @@ export default function ChatPage() {
     handleNextStep();
   };
   
-
   useEffect(() => {
     const step = currentStep < chatFlow.length ? chatFlow[currentStep] : null;
 
@@ -192,7 +185,6 @@ export default function ChatPage() {
       setHeaderStatus('online');
     }
   }, [isProcessing, currentStep, awaitingUserResponse]);
-
 
   useEffect(() => {
     if (currentStep >= chatFlow.length || awaitingUserResponse) {
@@ -225,7 +217,6 @@ export default function ChatPage() {
         if (userInfo) {
           trackEvent(stepId);
           setShowReport(true);
-          // Flow continues automatically after report is shown
           setAwaitingUserResponse(false);
           handleNextStep();
         } else {
@@ -268,15 +259,10 @@ export default function ChatPage() {
 
     runStep();
   }, [currentStep, awaitingUserResponse, userInfo, leadInfo.name]);
-
-  const getAudioRef = (id: string | number) => {
-    return audioRefs.current[id];
-  }
   
   if (!isClient) {
     return null; // Or a loading spinner
   }
-
 
   return (
     <div className="bg-background flex justify-center items-center min-h-screen p-0 md:p-4">
