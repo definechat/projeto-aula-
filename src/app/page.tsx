@@ -97,16 +97,17 @@ export default function ChatPage() {
     const step = chatFlow[currentStep];
     addMessage({ sender: 'user', type: 'text', content: inputValue.trim() }, `step_${step.id}`);
     
-    if (step.id === 0.35) { // Capturing name
-        setLeadInfo(prev => ({ ...prev, name: inputValue.trim() }));
+    if (step.id === 0.36) { // Capturing name after before-after
+        setAwaitingUserResponse(false);
+        handleNextStep();
     } else if (step.id === 0.4) { // Capturing whatsapp
         setLeadInfo(prev => ({ ...prev, whatsapp: inputValue.trim() }));
+        setAwaitingUserResponse(false);
+        handleNextStep();
     }
 
 
     setInputValue('');
-    setAwaitingUserResponse(false);
-    handleNextStep();
   };
 
 
@@ -213,6 +214,10 @@ export default function ChatPage() {
 
       if (step.audioDuration) messageToAdd.audioDuration = step.audioDuration;
       if (step.type === 'image' && step.imageSrc) messageToAdd.imageSrc = step.imageSrc;
+      if (step.type === 'before-after') {
+          messageToAdd.beforeImageSrc = step.beforeImageSrc;
+          messageToAdd.afterImageSrc = step.afterImageSrc;
+      }
       if (step.type === 'quick-reply' && step.options) messageToAdd.options = step.options;
       if (step.audioSrc) {
         messageToAdd.audioSrc = step.audioSrc;

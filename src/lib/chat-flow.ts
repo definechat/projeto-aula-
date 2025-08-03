@@ -30,6 +30,15 @@ export const chatFlow: ChatStep[] = [
     audioSrc: 'https://ephemeral-kangaroo-523a27.netlify.app/audio-boas-vindas.mp3',
     audioDuration: 29,
     delay: 1000,
+  },
+  {
+    id: 0.36,
+    sender: 'bot',
+    type: 'before-after',
+    delay: 2000,
+    content: "Essa é **Ivani**, eliminou **23kg** de muita gordura principalmente na barriga, após usar um **vegetal poderoso** 🌿, 1x ao dia, após o almoço, indicado por mim!",
+    beforeImageSrc: "https://i.imgur.com/0JxjIbr.jpeg",
+    afterImageSrc: "https://i.imgur.com/0JxjIbr.jpeg",
     waitForUser: true,
   },
   {

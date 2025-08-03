@@ -10,6 +10,8 @@ import { Button } from "./ui/button";
 import { TypingIndicator } from './typing-indicator';
 import { AudioPlayer } from "@/components/audio-player";
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
+import { BeforeAfterImage } from './before-after-image';
+
 
 const MessageStatus = ({ status }: { status: Message['status'] }) => {
   if (status === 'read') return <CheckCheck className="h-4 w-4 text-blue-500" />;
@@ -25,7 +27,7 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = ({ message, onQuickReply, getAudioRef }: ChatMessageProps) => {
-  const { id, sender, type, content, timestamp, imageSrc, audioSrc, audioDuration, status, options } = message;
+  const { id, sender, type, content, timestamp, imageSrc, audioSrc, audioDuration, status, options, beforeImageSrc, afterImageSrc } = message;
   const isUser = sender === 'user';
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -49,7 +51,7 @@ export const ChatMessage = ({ message, onQuickReply, getAudioRef }: ChatMessageP
     isUser ? 'bg-teal-500 text-white rounded-br-none' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none',
     { 'p-1 bg-transparent dark:bg-transparent shadow-none': (type === 'image' || type === 'video') && imageSrc },
     { 'p-2 bg-gray-200 dark:bg-gray-700': type === 'loading' },
-    { 'bg-transparent dark:bg-transparent shadow-none w-full max-w-[85%] sm:max-w-[75%]': type === 'audio' }
+    { 'bg-transparent dark:bg-transparent shadow-none w-full max-w-[85%] sm:max-w-[75%]': type === 'audio' || type === 'before-after' }
   );
   
   const TimeStamp = ({isMedia, isAudio}: {isMedia?: boolean, isAudio?: boolean}) => (
@@ -68,6 +70,16 @@ export const ChatMessage = ({ message, onQuickReply, getAudioRef }: ChatMessageP
       case 'loading':
         return <TypingIndicator />;
       
+      case 'before-after':
+        if (!beforeImageSrc || !afterImageSrc) return null;
+        return (
+          <BeforeAfterImage 
+            before={beforeImageSrc} 
+            after={afterImageSrc} 
+            title={content}
+          />
+        );
+
       case 'image':
       case 'video':
         return (
@@ -87,7 +99,7 @@ export const ChatMessage = ({ message, onQuickReply, getAudioRef }: ChatMessageP
         );
       
       case 'audio':
-        if (!audioSrc || !audioRef) return null;
+        if (!audioSrc) return null;
         return (
           <div className={cn('w-full flex items-center gap-2 text-sm p-2 rounded-lg', isUser ? 'bg-teal-500 text-white' : 'bg-gray-200 dark:bg-gray-700')}>
             {!isUser && (
@@ -97,7 +109,7 @@ export const ChatMessage = ({ message, onQuickReply, getAudioRef }: ChatMessageP
                 </Avatar>
             )}
             <div className="flex-grow">
-              <AudioPlayer audioRef={audioRef} src={audioSrc} duration={audioDuration} />
+              <AudioPlayer src={audioSrc} duration={audioDuration} />
               <TimeStamp isAudio={true} />
             </div>
           </div>
@@ -137,7 +149,7 @@ export const ChatMessage = ({ message, onQuickReply, getAudioRef }: ChatMessageP
     }
   };
   
-  if (type === 'quick-reply' || type === 'cta') {
+  if (type === 'quick-reply' || type === 'cta' || type === 'before-after') {
     return renderContent();
   }
 

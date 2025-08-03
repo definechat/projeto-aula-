@@ -2,9 +2,11 @@
 export interface ChatStep {
   id: number;
   sender: 'bot';
-  type: 'text' | 'audio' | 'image' | 'video' | 'quick-reply' | 'cta' | 'calculator' | 'report';
+  type: 'text' | 'audio' | 'image' | 'video' | 'quick-reply' | 'cta' | 'calculator' | 'report' | 'before-after';
   content?: string;
   imageSrc?: string;
+  beforeImageSrc?: string;
+  afterImageSrc?: string;
   audioSrc?: string;
   audioDuration?: number; // in seconds
   waitForUser?: boolean;
@@ -15,11 +17,13 @@ export interface ChatStep {
 export interface Message {
   id: string;
   sender: 'bot' | 'user';
-  type: 'text' | 'audio' | 'image' | 'video' | 'quick-reply' | 'cta' | 'loading';
+  type: 'text' | 'audio' | 'image' | 'video' | 'quick-reply' | 'cta' | 'loading' | 'before-after';
   content?: string;
   audioSrc?: string;
   audioDuration?: number;
   imageSrc?: string;
+  beforeImageSrc?: string;
+  afterImageSrc?: string;
   timestamp: string;
   options?: { text: string; value: any }[];
   status?: 'sent' | 'delivered' | 'read';
