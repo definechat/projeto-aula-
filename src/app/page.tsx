@@ -134,7 +134,7 @@ export default function ChatPage() {
   
   const handleDownloadReport = async () => {
     if (!reportCardRef.current) return;
-    const step = chatFlow[currentStep];
+    
     try {
         const canvas = await html2canvas(reportCardRef.current, { scale: 2 });
         const link = document.createElement('a');
@@ -145,13 +145,13 @@ export default function ChatPage() {
         document.body.removeChild(link);
         setShowLeadModal(false);
         setShowReport(false);
-        addMessage({ sender: 'bot', type: 'text', content: "Ótimo! Seu relatório foi baixado. Agora vamos continuar para a parte final." }, step.id ? `step_${step.id}` : undefined);
         setAwaitingUserResponse(false);
         handleNextStep(); 
     } catch (error) {
         console.error("Erro ao gerar a imagem do relatório:", error);
         setShowReport(false);
-        addMessage({ sender: 'bot', type: 'text', content: "Tive um problema ao gerar seu relatório. Vamos continuar mesmo assim." }, step.id ? `step_${step.id}` : undefined);
+        // This message will show up if download fails, and then flow continues
+        addMessage({ sender: 'bot', type: 'text', content: "Tive um problema ao gerar seu relatório. Vamos continuar mesmo assim." });
         setAwaitingUserResponse(false);
         handleNextStep();
     }

@@ -78,20 +78,27 @@ export const chatFlow: ChatStep[] = [
     delay: 2000,
   },
   {
-    id: 2.5,
+    id: 2.1,
     sender: 'bot',
-    type: 'audio',
-    audioSrc: 'https://jocular-hotteok-c97a2c.netlify.app/audio-boas-vindas.mp3',
-    audioDuration: 100,
-    delay: 2000,
-    autoplay: true,
+    type: 'text',
+    content: "Ótimo! Seu relatório foi baixado. Agora vamos continuar para a parte final.",
+    delay: 1000
   },
   {
     id: 3,
     sender: 'bot',
     type: 'text',
     content: "Oi minha querida, seja bem vinda! 👋",
+    delay: 1000,
+  },
+  {
+    id: 3.5,
+    sender: 'bot',
+    type: 'audio',
+    audioSrc: 'https://jocular-hotteok-c97a2c.netlify.app/audio-boas-vindas.mp3',
+    audioDuration: 100,
     delay: 7000,
+    autoplay: true,
   },
   {
     id: 4,
