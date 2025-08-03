@@ -78,9 +78,11 @@ export const ChatMessage = ({ message, onQuickReply }: ChatMessageProps) => {
         return (
           <div className="relative">
             {initialImageSrc ? (
-                <img 
-                    src={initialImageSrc} 
-                    alt={content || 'Chat image'} 
+                <Image
+                    src={initialImageSrc}
+                    alt={content || 'Chat image'}
+                    width={400}
+                    height={400}
                     className="rounded-lg object-cover w-full h-auto"
                     style={{ display: 'block' }}
                     onError={(e) => {

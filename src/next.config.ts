@@ -28,6 +28,25 @@ const nextConfig: NextConfig = {
         hostname: 'jocular-hotteok-c97a2c.netlify.app',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'steady-caramel-e0d360.netlify.app',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'profound-croissant-0ea90b.netlify.app',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https'
+        ,
+        hostname: 'jovial-stroopwafel-4f5050.netlify.app',
+        port: '',
+        pathname: '/**',
       }
     ],
   },

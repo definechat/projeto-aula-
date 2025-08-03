@@ -333,37 +333,43 @@ export default function ChatPage() {
               </div>
             )}
              {showImage1 && (
-              <div className="flex w-full justify-start">
-                <div className="w-full max-w-[85%] sm:max-w-[75%]">
-                  <img
-                    src="https://steady-caramel-e0d360.netlify.app/imagem.gif"
-                    alt="Imagem 1"
-                    className="w-full h-auto rounded-lg shadow-md"
-                  />
-                </div>
-              </div>
+                <ChatMessage 
+                  message={{
+                    id: 'final-image-1',
+                    sender: 'bot',
+                    type: 'image',
+                    imageSrc: 'https://steady-caramel-e0d360.netlify.app/imagem.gif',
+                    content: 'Imagem 1',
+                    timestamp: ''
+                  }}
+                  onQuickReply={() => {}}
+                />
             )}
             {showImage2 && (
-              <div className="flex w-full justify-start">
-                 <div className="w-full max-w-[85%] sm:max-w-[75%]">
-                  <img
-                    src="https://profound-croissant-0ea90b.netlify.app/imagem.gif"
-                    alt="Imagem 2"
-                    className="w-full h-auto rounded-lg shadow-md"
-                  />
-                </div>
-              </div>
+               <ChatMessage 
+                  message={{
+                    id: 'final-image-2',
+                    sender: 'bot',
+                    type: 'image',
+                    imageSrc: 'https://profound-croissant-0ea90b.netlify.app/imagem.gif',
+                    content: 'Imagem 2',
+                    timestamp: ''
+                  }}
+                  onQuickReply={() => {}}
+                />
             )}
             {showImage3 && (
-              <div className="flex w-full justify-start">
-                 <div className="w-full max-w-[85%] sm:max-w-[75%]">
-                  <img
-                    src="https://jovial-stroopwafel-4f5050.netlify.app/imagem.gif"
-                    alt="Imagem 3"
-                    className="w-full h-auto rounded-lg shadow-md"
-                  />
-                </div>
-              </div>
+               <ChatMessage 
+                  message={{
+                    id: 'final-image-3',
+                    sender: 'bot',
+                    type: 'image',
+                    imageSrc: 'https://jovial-stroopwafel-4f5050.netlify.app/imagem.gif',
+                    content: 'Imagem 3',
+                    timestamp: ''
+                  }}
+                  onQuickReply={() => {}}
+                />
             )}
           </div>
         </main>
