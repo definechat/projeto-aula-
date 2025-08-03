@@ -24,10 +24,11 @@ export default function ChatPage() {
   const [showReport, setShowReport] = useState(false);
   const [leadInfo, setLeadInfo] = useState({ name: '', whatsapp: '' });
   const [inputValue, setInputValue] = useState('');
-  const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [showImage1, setShowImage1] = useState(false);
   const [showImage2, setShowImage2] = useState(false);
   const [showImage3, setShowImage3] = useState(false);
+  const [showFinalAudio, setShowFinalAudio] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   const { trackEvent } = useAnalytics();
@@ -44,26 +45,34 @@ export default function ChatPage() {
     if (typeof window !== 'undefined') {
         audioSentRef.current = new Audio('/audio/sent.mp3');
         audioReceivedRef.current = new Audio('/audio/received.mp3');
+
+        const handleInteraction = () => {
+            setHasInteracted(true);
+            document.removeEventListener('click', handleInteraction);
+            document.removeEventListener('scroll', handleInteraction);
+            document.removeEventListener('keydown', handleInteraction);
+        };
+
+        document.addEventListener('click', handleInteraction);
+        document.addEventListener('scroll', handleInteraction);
+        document.addEventListener('keydown', handleInteraction);
+
+        return () => {
+            document.removeEventListener('click', handleInteraction);
+            document.removeEventListener('scroll', handleInteraction);
+            document.removeEventListener('keydown', handleInteraction);
+        };
     }
   }, []);
 
   useEffect(() => {
     if (showReport) {
       const timer = setTimeout(() => {
-        setShowAudioPlayer(true);
-      }, 7000);
-      return () => clearTimeout(timer);
-    }
-  }, [showReport]);
-
-  useEffect(() => {
-    if (showAudioPlayer) {
-      const timer = setTimeout(() => {
         setShowImage1(true);
       }, 7000);
       return () => clearTimeout(timer);
     }
-  }, [showAudioPlayer]);
+  }, [showReport]);
 
   useEffect(() => {
     if (showImage1) {
@@ -83,13 +92,23 @@ export default function ChatPage() {
     }
   }, [showImage2]);
 
+  useEffect(() => {
+    if (showImage3) {
+      const timer = setTimeout(() => {
+          setShowFinalAudio(true);
+      }, 7000); // Show player after 7s
+      return () => clearTimeout(timer);
+    }
+  }, [showImage3]);
+
+
   const scrollToBottom = () => {
     chatContainerRef.current?.scrollTo({ top: chatContainerRef.current.scrollHeight, behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isProcessing, showIMCForm, showReport, showAudioPlayer, showImage1, showImage2, showImage3]);
+  }, [messages, isProcessing, showIMCForm, showReport, showImage1, showImage2, showImage3, showFinalAudio]);
 
   const addMessage = (message: Omit<Message, 'id' | 'timestamp' | 'status'>, stepId?: string) => {
     if (message.sender === 'user' && audioSentRef.current) {
@@ -303,24 +322,6 @@ export default function ChatPage() {
             {showReport && userInfo && (
               <ReportCard userInfo={userInfo} />
             )}
-            {showAudioPlayer && (
-               <div className="flex w-full justify-start">
-                  <div className="relative w-fit max-w-[85%] sm:max-w-[75%] rounded-xl shadow-sm flex flex-col bg-transparent dark:bg-transparent w-full">
-                     <ChatMessage 
-                        message={{
-                          id: 'final-audio',
-                          sender: 'bot',
-                          type: 'audio',
-                          audioSrc: 'https://jocular-hotteok-c97a2c.netlify.app/audio.mp3',
-                          audioDuration: 100,
-                          autoplay: true,
-                          timestamp: '',
-                        }}
-                        onQuickReply={() => {}}
-                      />
-                  </div>
-              </div>
-            )}
              {showImage1 && (
                 <ChatMessage 
                   message={{
@@ -359,6 +360,26 @@ export default function ChatPage() {
                   }}
                   onQuickReply={() => {}}
                 />
+            )}
+            {showFinalAudio && (
+               <div className="flex w-full justify-start">
+                  <div className="relative w-fit max-w-[85%] sm:max-w-[75%] rounded-xl shadow-sm flex flex-col bg-transparent dark:bg-transparent w-full">
+                     <ChatMessage 
+                        message={{
+                          id: 'final-audio',
+                          sender: 'bot',
+                          type: 'audio',
+                          audioSrc: 'https://celebrated-halva-7d258a.netlify.app/',
+                          audioDuration: 100,
+                          autoplay: true,
+                          timestamp: '',
+                          playbackDelay: 97000,
+                          hasInteracted: hasInteracted,
+                        }}
+                        onQuickReply={() => {}}
+                      />
+                  </div>
+              </div>
             )}
           </div>
         </main>
