@@ -86,25 +86,4 @@ export const chatFlow: ChatStep[] = [
     delay: 5000,
     autoplay: true,
   },
-  {
-    id: 3,
-    sender: 'bot',
-    type: 'image',
-    imageSrc: 'https://i.imgur.com/WGlJJYr.gif',
-    delay: 7000,
-  },
-  {
-    id: 4,
-    sender: 'bot',
-    type: 'image',
-    imageSrc: 'https://i.imgur.com/sHEZcAB.gif',
-    delay: 7000,
-  },
-  {
-    id: 5,
-    sender: 'bot',
-    type: 'image',
-    imageSrc: 'https://i.imgur.com/oxv0OYJ.gif',
-    delay: 7000,
-  },
 ];
