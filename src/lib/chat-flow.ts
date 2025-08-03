@@ -21,7 +21,7 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'image',
     content: '',
-    imageSrc: "https://i.imgur.com/1YjR7GO.gif",
+    imageSrc: "https://helpful-kringle-4454f2.netlify.app/maria.gif",
     delay: 2000,
   },
    {
@@ -82,7 +82,7 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'text',
     content: "Ótimo! Seu relatório foi gerado. Agora vamos continuar para a parte final.",
-    delay: 3000 // Give user some time to see the report card
+    delay: 7000 // Give user some time to see the report card
   },
   {
     id: 3,
