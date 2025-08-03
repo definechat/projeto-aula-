@@ -17,6 +17,13 @@ export const chatFlow: ChatStep[] = [
     delay: 2000,
   },
    {
+    id: 0.25,
+    sender: 'bot',
+    type: 'image',
+    imageSrc: "https://helpful-kringle-4454f2.netlify.app/maria.gif",
+    delay: 2000,
+  },
+   {
     id: 0.3,
     sender: 'bot',
     type: 'text',
@@ -272,3 +279,5 @@ export const chatFlow: ChatStep[] = [
     waitForUser: true
   }
 ];
+
+    
