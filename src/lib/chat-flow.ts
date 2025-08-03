@@ -27,7 +27,7 @@ export const chatFlow: ChatStep[] = [
     id: 0.35,
     sender: 'bot',
     type: 'audio',
-    audioSrc: 'https://leafy-cannoli-077a5e.netlify.app/audio/nome-whatsapp.mp3',
+    audioSrc: 'https://ephemeral-kangaroo-523a27.netlify.app/audio/nome-whatsapp.mp3',
     audioDuration: 29,
     delay: 2000,
     waitForUser: true,
