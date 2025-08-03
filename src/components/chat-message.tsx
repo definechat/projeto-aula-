@@ -33,7 +33,7 @@ export const ChatMessage = ({ message, onQuickReply, getAudioRef }: ChatMessageP
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (type === 'audio' && audioSrc) {
+    if (type === 'audio' && audioSrc && typeof id !== 'undefined') {
         const audioElement = getAudioRef(id);
         if (audioElement) {
             audioRef.current = audioElement;
