@@ -32,6 +32,9 @@ export default function ChatPage() {
   const [leadInfo, setLeadInfo] = useState({ name: '', whatsapp: '' });
   const [inputValue, setInputValue] = useState('');
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
+  const [showImage1, setShowImage1] = useState(false);
+  const [showImage2, setShowImage2] = useState(false);
+  const [showImage3, setShowImage3] = useState(false);
 
   const { trackEvent } = useAnalytics();
 
@@ -57,6 +60,33 @@ export default function ChatPage() {
     }
   }, [showReport]);
 
+  useEffect(() => {
+    if (showAudioPlayer) {
+      const timer = setTimeout(() => {
+        setShowImage1(true);
+      }, 7000);
+      return () => clearTimeout(timer);
+    }
+  }, [showAudioPlayer]);
+
+  useEffect(() => {
+    if (showImage1) {
+      const timer = setTimeout(() => {
+        setShowImage2(true);
+      }, 7000);
+      return () => clearTimeout(timer);
+    }
+  }, [showImage1]);
+
+  useEffect(() => {
+    if (showImage2) {
+      const timer = setTimeout(() => {
+        setShowImage3(true);
+      }, 7000);
+      return () => clearTimeout(timer);
+    }
+  }, [showImage2]);
+
 
   const scrollToBottom = () => {
     chatContainerRef.current?.scrollTo({ top: chatContainerRef.current.scrollHeight, behavior: 'smooth' });
@@ -64,7 +94,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isProcessing, showIMCForm, showReport, showAudioPlayer]);
+  }, [messages, isProcessing, showIMCForm, showReport, showAudioPlayer, showImage1, showImage2, showImage3]);
 
   const addMessage = (message: Omit<Message, 'id' | 'timestamp' | 'status'>, stepId?: string) => {
     if (message.sender === 'user' && audioSentRef.current) {
@@ -300,6 +330,39 @@ export default function ChatPage() {
                         onQuickReply={() => {}}
                       />
                   </div>
+              </div>
+            )}
+             {showImage1 && (
+              <div className="flex w-full justify-start">
+                <div className="w-full max-w-[85%] sm:max-w-[75%]">
+                  <img
+                    src="https://steady-caramel-e0d360.netlify.app/"
+                    alt="Imagem 1"
+                    className="w-full h-auto rounded-lg shadow-md"
+                  />
+                </div>
+              </div>
+            )}
+            {showImage2 && (
+              <div className="flex w-full justify-start">
+                 <div className="w-full max-w-[85%] sm:max-w-[75%]">
+                  <img
+                    src="https://profound-croissant-0ea90b.netlify.app/"
+                    alt="Imagem 2"
+                    className="w-full h-auto rounded-lg shadow-md"
+                  />
+                </div>
+              </div>
+            )}
+            {showImage3 && (
+              <div className="flex w-full justify-start">
+                 <div className="w-full max-w-[85%] sm:max-w-[75%]">
+                  <img
+                    src="https://jovial-stroopwafel-4f5050.netlify.app/"
+                    alt="Imagem 3"
+                    className="w-full h-auto rounded-lg shadow-md"
+                  />
+                </div>
               </div>
             )}
           </div>
