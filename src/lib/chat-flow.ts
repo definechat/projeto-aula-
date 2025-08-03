@@ -81,8 +81,8 @@ export const chatFlow: ChatStep[] = [
     id: 2.1,
     sender: 'bot',
     type: 'text',
-    content: "Ótimo! Seu relatório foi baixado. Agora vamos continuar para a parte final.",
-    delay: 1000
+    content: "Ótimo! Seu relatório foi gerado. Agora vamos continuar para a parte final.",
+    delay: 3000 // Give user some time to see the report card
   },
   {
     id: 3,

@@ -144,16 +144,9 @@ export default function ChatPage() {
         link.click();
         document.body.removeChild(link);
         setShowLeadModal(false);
-        setShowReport(false);
-        setAwaitingUserResponse(false);
-        handleNextStep(); 
+        // Do not advance the flow here anymore. The flow continues automatically.
     } catch (error) {
         console.error("Erro ao gerar a imagem do relatório:", error);
-        setShowReport(false);
-        // This message will show up if download fails, and then flow continues
-        addMessage({ sender: 'bot', type: 'text', content: "Tive um problema ao gerar seu relatório. Vamos continuar mesmo assim." });
-        setAwaitingUserResponse(false);
-        handleNextStep();
     }
   };
 
@@ -210,7 +203,9 @@ export default function ChatPage() {
         if (userInfo) {
           trackEvent(stepId);
           setShowReport(true);
-          setAwaitingUserResponse(true);
+          // Set awaitingUserResponse to false so the flow continues automatically
+          setAwaitingUserResponse(false);
+          handleNextStep();
         } else {
           addMessage({ sender: 'bot', type: 'text', content: "Parece que não tenho suas informações. Vamos pular esta etapa." });
           handleNextStep();
@@ -297,7 +292,7 @@ export default function ChatPage() {
                 <div className="flex justify-center my-2">
                   <Button onClick={() => setShowLeadModal(true)} size="lg" className="bg-green-500 hover:bg-green-600 text-white font-bold shadow-lg animate-pulse">
                     <Download className="mr-2 h-5 w-5" />
-                    Baixar Relatório e Continuar
+                    Baixar Relatório
                   </Button>
                 </div>
               </>
@@ -355,7 +350,7 @@ export default function ChatPage() {
             </div>
              <Button onClick={handleDownloadReport} disabled={!leadInfo.name || !leadInfo.whatsapp}>
                 <Download className="mr-2 h-4 w-4" />
-                Baixar e Continuar
+                Baixar
             </Button>
           </DialogContent>
         </Dialog>
