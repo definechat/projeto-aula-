@@ -28,6 +28,12 @@ const nextConfig: NextConfig = {
         hostname: 'helpful-kringle-4454f2.netlify.app',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'jocular-hotteok-c97a2c.netlify.app',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
