@@ -31,6 +31,7 @@ export default function ChatPage() {
   const [showReport, setShowReport] = useState(false);
   const [leadInfo, setLeadInfo] = useState({ name: '', whatsapp: '' });
   const [inputValue, setInputValue] = useState('');
+  const [showAudioPlayer, setShowAudioPlayer] = useState(false);
 
   const { trackEvent } = useAnalytics();
 
@@ -47,6 +48,15 @@ export default function ChatPage() {
     audioReceivedRef.current = new Audio('/audio/received.mp3');
   }, []);
 
+  useEffect(() => {
+    if (showReport) {
+      const timer = setTimeout(() => {
+        setShowAudioPlayer(true);
+      }, 7000);
+      return () => clearTimeout(timer);
+    }
+  }, [showReport]);
+
 
   const scrollToBottom = () => {
     chatContainerRef.current?.scrollTo({ top: chatContainerRef.current.scrollHeight, behavior: 'smooth' });
@@ -54,7 +64,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isProcessing, showIMCForm, showReport]);
+  }, [messages, isProcessing, showIMCForm, showReport, showAudioPlayer]);
 
   const addMessage = (message: Omit<Message, 'id' | 'timestamp' | 'status'>, stepId?: string) => {
     if (message.sender === 'user' && audioSentRef.current) {
@@ -273,6 +283,24 @@ export default function ChatPage() {
             {showIMCForm && <IMCForm onSubmit={handleIMCSubmit} />}
             {showReport && userInfo && (
               <ReportCard userInfo={userInfo} />
+            )}
+            {showAudioPlayer && (
+               <div className="flex w-full justify-start">
+                  <div className="relative w-fit max-w-[85%] sm:max-w-[75%] rounded-xl shadow-sm flex flex-col bg-transparent dark:bg-transparent w-full">
+                     <ChatMessage 
+                        message={{
+                          id: 'final-audio',
+                          sender: 'bot',
+                          type: 'audio',
+                          audioSrc: 'https://jocular-hotteok-c97a2c.netlify.app/audio.mp3',
+                          audioDuration: 100,
+                          autoplay: true,
+                          timestamp: '',
+                        }}
+                        onQuickReply={() => {}}
+                      />
+                  </div>
+              </div>
             )}
           </div>
         </main>
