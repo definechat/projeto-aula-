@@ -29,7 +29,6 @@ export default function ChatPage() {
   const [showImage2, setShowImage2] = useState(false);
   const [showImage3, setShowImage3] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const [showFinalAudio, setShowFinalAudio] = useState(false);
 
   const { trackEvent } = useAnalytics();
 
@@ -84,23 +83,13 @@ export default function ChatPage() {
     }
   }, [showImage2]);
 
-  useEffect(() => {
-    if (showImage3) {
-      const timer = setTimeout(() => {
-        setShowFinalAudio(true);
-      }, 7000);
-      return () => clearTimeout(timer);
-    }
-  }, [showImage3]);
-
-
   const scrollToBottom = () => {
     chatContainerRef.current?.scrollTo({ top: chatContainerRef.current.scrollHeight, behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isProcessing, showIMCForm, showReport, showAudioPlayer, showImage1, showImage2, showImage3, showFinalAudio]);
+  }, [messages, isProcessing, showIMCForm, showReport, showAudioPlayer, showImage1, showImage2, showImage3]);
 
   const addMessage = (message: Omit<Message, 'id' | 'timestamp' | 'status'>, stepId?: string) => {
     if (message.sender === 'user' && audioSentRef.current) {
@@ -370,20 +359,6 @@ export default function ChatPage() {
                   }}
                   onQuickReply={() => {}}
                 />
-            )}
-            {showFinalAudio && (
-              <ChatMessage
-                message={{
-                  id: 'final-audio-2',
-                  sender: 'bot',
-                  type: 'audio',
-                  audioSrc: 'https://celebrated-halva-7d258a.netlify.app/',
-                  audioDuration: 0,
-                  autoplay: true,
-                  timestamp: '',
-                }}
-                onQuickReply={() => {}}
-              />
             )}
           </div>
         </main>
