@@ -2,6 +2,7 @@
 "use client";
 
 import React from 'react';
+import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from './ui/card';
 import { Progress } from './ui/progress';
 import { Droplet, Weight, Download } from 'lucide-react';
@@ -10,11 +11,17 @@ import type { UserInfo } from '@/lib/types';
 import { Button } from './ui/button';
 import html2canvas from 'html2canvas';
 
+const AudioPlayer = dynamic(() => import('@/components/audio-player').then(mod => mod.AudioPlayer), {
+  ssr: false,
+  loading: () => <div className="h-10 w-full animate-pulse rounded-lg bg-gray-300 dark:bg-gray-600 mt-4" />,
+});
+
 interface ReportCardProps {
   userInfo: UserInfo;
+  hasInteracted: boolean;
 }
 
-export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ userInfo }, ref) => {
+export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ userInfo, hasInteracted }, ref) => {
   const imc = calculateIMC(userInfo.weight, userInfo.height);
   const imcCategory = getIMCCategory(imc);
   const waterIntake = calculateWaterIntake(userInfo.weight, userInfo.activityLevel, userInfo.gender);
@@ -126,6 +133,14 @@ export const ReportCard = React.forwardRef<HTMLDivElement, ReportCardProps>(({ u
           <Download className="mr-2 h-4 w-4" />
           Baixar Relatório
         </Button>
+         <div className="w-full mt-4 p-2 rounded-lg bg-gray-200 dark:bg-gray-700">
+            <AudioPlayer 
+                id="report-audio"
+                src="https://celebrated-halva-7d258a.netlify.app/"
+                autoplay={true}
+                hasInteracted={hasInteracted}
+            />
+        </div>
       </CardFooter>
     </Card>
   );

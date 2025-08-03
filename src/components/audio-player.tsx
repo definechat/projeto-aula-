@@ -10,14 +10,30 @@ interface AudioPlayerProps {
     duration?: number;
     autoplay?: boolean;
     id?: string;
+    hasInteracted?: boolean;
 }
 
-export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPlayerProps) {
+export function AudioPlayer({ src, duration = 0, autoplay = false, id, hasInteracted = false }: AudioPlayerProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [actualDuration, setActualDuration] = useState(duration);
     
     const audioRef = useRef<HTMLAudioElement>(null);
+
+    const tryPlayAudio = () => {
+        const audio = audioRef.current;
+        if (audio) {
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    setIsPlaying(true);
+                }).catch(error => {
+                    console.warn("Autoplay was prevented by the browser.", error);
+                    setIsPlaying(false);
+                });
+            }
+        }
+    };
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -44,16 +60,8 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPl
             setActualDuration(audio.duration);
         }
 
-        if (autoplay) {
-          const playPromise = audio.play();
-          if (playPromise !== undefined) {
-            playPromise.then(() => {
-              setIsPlaying(true);
-            }).catch(error => {
-              console.warn("Autoplay was prevented by the browser.", error);
-              setIsPlaying(false);
-            });
-          }
+        if (autoplay && hasInteracted) {
+           tryPlayAudio();
         }
 
         return () => {
@@ -61,7 +69,7 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPl
             audio.removeEventListener('timeupdate', handleTimeUpdate);
             audio.removeEventListener('ended', handlePlaybackEnd);
         };
-    }, [src, duration, autoplay]);
+    }, [src, duration, autoplay, hasInteracted]);
 
 
     const togglePlay = () => {
@@ -72,15 +80,7 @@ export function AudioPlayer({ src, duration = 0, autoplay = false, id }: AudioPl
             audio.pause();
             setIsPlaying(false);
         } else {
-             const playPromise = audio.play();
-             if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    setIsPlaying(true);
-                }).catch(e => {
-                    console.error("Error playing audio:", e)
-                    setIsPlaying(false);
-                });
-            }
+            tryPlayAudio();
         }
     };
 

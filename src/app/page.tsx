@@ -25,6 +25,7 @@ export default function ChatPage() {
   const [leadInfo, setLeadInfo] = useState({ name: '', whatsapp: '' });
   const [inputValue, setInputValue] = useState('');
   const [isClient, setIsClient] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const { trackEvent } = useAnalytics();
 
@@ -40,6 +41,23 @@ export default function ChatPage() {
     if (typeof window !== 'undefined') {
         audioSentRef.current = new Audio('/audio/sent.mp3');
         audioReceivedRef.current = new Audio('/audio/received.mp3');
+        
+        const handleFirstInteraction = () => {
+            setHasInteracted(true);
+            window.removeEventListener('click', handleFirstInteraction);
+            window.removeEventListener('scroll', handleFirstInteraction);
+            window.removeEventListener('keydown', handleFirstInteraction);
+        };
+        
+        window.addEventListener('click', handleFirstInteraction);
+        window.addEventListener('scroll', handleFirstInteraction);
+        window.addEventListener('keydown', handleFirstInteraction);
+        
+        return () => {
+            window.removeEventListener('click', handleFirstInteraction);
+            window.removeEventListener('scroll', handleFirstInteraction);
+            window.removeEventListener('keydown', handleFirstInteraction);
+        };
     }
   }, []);
 
@@ -252,7 +270,7 @@ export default function ChatPage() {
             {messages.map((msg) => (
               <ChatMessage 
                 key={msg.id} 
-                message={msg} 
+                message={{...msg, hasInteracted}} 
                 onQuickReply={(option) => handleQuickReply(option, `step_${chatFlow[currentStep].id}`)}
               />
             ))}
@@ -261,7 +279,7 @@ export default function ChatPage() {
             )}
             {showIMCForm && <IMCForm onSubmit={handleIMCSubmit} />}
             {showReport && userInfo && (
-              <ReportCard userInfo={userInfo} />
+              <ReportCard userInfo={userInfo} hasInteracted={hasInteracted} />
             )}
           </div>
         </main>
