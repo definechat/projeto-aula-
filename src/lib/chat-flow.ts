@@ -6,7 +6,7 @@ export const chatFlow: ChatStep[] = [
     id: 0.1,
     sender: 'bot',
     type: 'text',
-    content: "Olá, tudo bem? 👋",
+    content: "Olá, tudo bem? 😊👋",
     delay: 1000,
   },
   {
@@ -16,15 +16,7 @@ export const chatFlow: ChatStep[] = [
     content: "Você sabia que é **impossível emagrecer de vez** sem antes fazer um **check-up de emagrecimento?**",
     delay: 2000,
   },
-   {
-    id: 0.25,
-    sender: 'bot',
-    type: 'image',
-    content: '',
-    imageSrc: "https://i.imgur.com/4Fr9DGu.gif",
-    delay: 2000,
-  },
-   {
+  {
     id: 0.3,
     sender: 'bot',
     type: 'text',
