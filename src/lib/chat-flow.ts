@@ -6,7 +6,7 @@ export const chatFlow: ChatStep[] = [
     id: 0.1,
     sender: 'bot',
     type: 'text',
-    content: "Olá, tudo bem? 😊👋",
+    content: "Olá, tudo em Paz ? 😊👋",
     delay: 1000,
   },
   {
@@ -68,5 +68,12 @@ export const chatFlow: ChatStep[] = [
     sender: 'bot',
     type: 'report',
     delay: 2000,
+  },
+  {
+    id: 6,
+    sender: 'bot',
+    type: 'cta',
+    content: "QUERO EMAGRECER COM GRÃOKISECA!",
+    delay: 3000,
   },
 ];
